@@ -8,13 +8,16 @@ interface StatProps {
   icon: LucideIcon;
   color: 'blue' | 'green' | 'red' | 'amber';
   isAlert?: boolean;
+  isSafe?: boolean;
 }
 
-const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, isAlert }) => {
-  // Dynamic border for Alert State
-  const borderClass = isAlert 
-    ? 'border-[#EF4444] border-2 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.4)]' 
-    : 'border-[#38BDF8]/20 border hover:border-[#38BDF8]/40';
+const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, isAlert, isSafe }) => {
+  // Dynamic border for Alert / Safe State
+  const borderClass = isAlert
+    ? 'border-[#EF4444] border-2 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.4)]'
+    : isSafe
+      ? 'border-[#22C55E] border-2 animate-pulse shadow-[0_0_30px_rgba(34,197,94,0.35)]'
+      : 'border-[#38BDF8]/20 border hover:border-[#38BDF8]/40';
 
   const colorClasses = {
     blue: 'text-[#38BDF8]',
@@ -30,11 +33,11 @@ const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[#9CA3AF] text-xs uppercase tracking-wider font-bold">{label}</span>
-          <Icon className={`w-6 h-6 ${colorClasses[color]}`} />
+          <Icon className={`w-5 h-5 ${colorClasses[color]}`} />
         </div>
         <div className="flex items-end gap-2">
-          <span className="text-3xl font-black text-[#E5E7EB]">{value}</span>
-          <span className="text-base text-[#9CA3AF] mb-1 font-bold">{unit}</span>
+          <span className="text-2xl font-black text-[#E5E7EB]">{value}</span>
+          <span className="text-sm text-[#9CA3AF] mb-1 font-bold">{unit}</span>
         </div>
       </div>
     </div>

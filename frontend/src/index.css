@@ -7,8 +7,9 @@ html, body, #root {
 }
 
 /* Responsive base font-size */
+/* Responsive base font-size */
 html { 
-	font-size: 14px; /* Reduced base size */
+	font-size: 12px; /* Reduced base size */
 }
 }
 

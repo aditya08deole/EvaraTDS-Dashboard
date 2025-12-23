@@ -29,6 +29,7 @@ const Dashboard = () => {
 
   const latest = data?.latest || { tds: 0, temp: 0, voltage: 0 };
   const isCritical = latest.tds > 150;
+  const isSafe = latest.tds <= 150;
 
   // Format history for charts
   const chartData = data?.history.map((item: any) => ({
@@ -43,13 +44,13 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-2 leading-tight">EvaraTDS Dashboard</h1>
+          <h1 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-2 leading-tight">EvaraTDS Dashboard</h1>
           <p className="text-[#E5E7EB] text-sm lg:text-base font-semibold">System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-3">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-10 lg:h-12 w-auto object-contain" />
-            <img src="/IIITH.png" alt="IIITH" className="h-10 lg:h-12 w-auto object-contain" />
+            <div className="flex items-center gap-3">
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] lg:h-[52px] w-auto object-contain" />
+            <img src="/IIITH.png" alt="IIITH" className="h-[44px] lg:h-[52px] w-auto object-contain" />
           </div>
           <div className="flex items-center gap-2 text-[#9CA3AF] font-medium text-sm">
             <RefreshCw className="w-4 h-4 animate-spin-slow text-[#38BDF8]" />
@@ -59,12 +60,17 @@ const Dashboard = () => {
       </div>
 
       {/* Alert Banner */}
-      {isCritical && (
+      {isCritical ? (
         <div className="neon-alert p-2 rounded-xl flex items-center gap-2 shadow-xl">
           <AlertTriangle className="w-5 h-5 text-[#EF4444] flex-shrink-0" />
           <span className="font-black text-sm text-[#E5E7EB]">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
-      )}
+      ) : isSafe ? (
+        <div className="neon-alert p-2 rounded-xl flex items-center gap-2 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)]">
+          <Droplets className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
+          <span className="font-black text-sm text-[#E5E7EB]">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
+        </div>
+      ) : null}
 
       {/* Stat Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 relative">
@@ -74,8 +80,9 @@ const Dashboard = () => {
           value={latest.tds.toFixed(0)} 
           unit="PPM" 
           icon={Droplets} 
-          color={isCritical ? "red" : "blue"}
+          color={isCritical ? "red" : isSafe ? "green" : "blue"}
           isAlert={isCritical}
+          isSafe={isSafe}
         />
         <StatCard 
           label="Temperature" 
@@ -115,7 +122,7 @@ const Dashboard = () => {
                   <XAxis dataKey="time" stroke="#E5E7EB" fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <YAxis stroke="#E5E7EB" fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #38BDF8', borderRadius: '12px', color: '#E5E7EB', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', fontSize: '14px', fontWeight: 700, padding: '8px 12px' }}
+                    contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #38BDF8', borderRadius: '12px', color: '#E5E7EB', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', fontSize: '12px', fontWeight: 700, padding: '6px 10px' }}
                   />
                   <Area type="monotone" dataKey="tds" stroke="#38BDF8" strokeWidth={4} fillOpacity={1} fill="url(#colorTds)" />
                   <Line type="monotone" dataKey={() => 150} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={3} dot={false} isAnimationActive={false}/>
@@ -141,7 +148,7 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
                   <XAxis dataKey="time" stroke="#E5E7EB" fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <YAxis stroke="#E5E7EB" fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
-                  <Tooltip contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #F59E0B', borderRadius: '10px', color: '#E5E7EB', fontSize: '14px', fontWeight: 700, boxShadow: '0 4px 16px rgba(0,0,0,0.5)', padding: '8px 12px' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #F59E0B', borderRadius: '10px', color: '#E5E7EB', fontSize: '12px', fontWeight: 700, boxShadow: '0 4px 16px rgba(0,0,0,0.5)', padding: '6px 10px' }} />
                   <Area type="monotone" dataKey="temp" stroke="#F59E0B" strokeWidth={4} fillOpacity={1} fill="url(#colorTemp)" />
                 </AreaChart>
               </ResponsiveContainer>
