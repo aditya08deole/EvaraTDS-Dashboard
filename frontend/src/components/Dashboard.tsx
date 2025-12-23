@@ -43,30 +43,35 @@ const Dashboard = () => {
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
-        <div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-1 sm:mb-2 leading-tight">EvaraTDS Dashboard</h1>
-          <p className="text-[#E5E7EB] text-xs sm:text-sm lg:text-base font-semibold">System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
+        <div className="flex-1">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-1 sm:mb-2 leading-tight text-center sm:text-left">EvaraTDS Dashboard</h1>
+          <p className="text-[#E5E7EB] text-xs sm:text-sm lg:text-base font-semibold text-center sm:text-left">System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
         </div>
         <div className="flex flex-col sm:items-end gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-end">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[40px] sm:h-[48px] lg:h-[60px] w-auto object-contain" />
-            <img src="/IIITH.png" alt="IIITH" className="h-[40px] sm:h-[48px] lg:h-[60px] w-auto object-contain" />
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain" />
+            <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain" />
           </div>
-          <div className="flex items-center gap-1 sm:gap-2 text-[#9CA3AF] font-medium text-xs justify-center sm:justify-end mt-2 sm:mt-4">
-            <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin-slow text-[#38BDF8]" />
-            <span>Updated: {format(lastUpdated, 'HH:mm:ss')}</span>
+          <div className="flex flex-col items-center sm:items-end gap-1">
+            <div className="flex items-center gap-1 sm:gap-2 text-[#9CA3AF] font-medium text-xs justify-center sm:justify-end">
+              <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin-slow text-[#38BDF8]" />
+              <span>Updated: {format(lastUpdated, 'HH:mm:ss')}</span>
+            </div>
+            <div className="text-[#6B7280] text-xs font-medium">
+              <span>Firmware: v2.1.3</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Alert Banner */}
       {isCritical ? (
-        <div className="neon-alert p-4 sm:p-5 md:p-6 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-3/4 lg:w-1/2">
+        <div className="neon-alert p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
           <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 text-[#EF4444] flex-shrink-0" />
           <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
       ) : isSafe ? (
-        <div className="neon-alert p-4 sm:p-5 md:p-6 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)] w-full md:w-3/4 lg:w-1/2">
+        <div className="neon-alert p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)] w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
           <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-[#22C55E] flex-shrink-0" />
           <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
         </div>
