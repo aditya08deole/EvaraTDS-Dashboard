@@ -31,11 +31,6 @@ const GlassLayout: React.FC<LayoutProps> = ({ children }) => {
             <NavItem to="/history" icon={Database} label="Data Logs" />
             <NavItem to="/settings" icon={SettingsIcon} label="Calibration" />
           </nav>
-
-          <div className="text-xs text-[#6B7280] mt-auto pt-6 border-t border-[#1F2937]">
-            <div>Firmware: v1.2.4</div>
-            <div>Status: <span className="text-[#22C55E] font-semibold">Online</span></div>
-          </div>
         </aside>
 
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto z-10">
