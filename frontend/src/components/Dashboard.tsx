@@ -61,14 +61,14 @@ const Dashboard = () => {
 
       {/* Alert Banner */}
       {isCritical ? (
-        <div className="neon-alert p-3 sm:p-4 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-3/4 lg:w-1/2">
-          <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-[#EF4444] flex-shrink-0" />
-          <span className="font-black text-sm sm:text-base text-[#E5E7EB] leading-tight">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
+        <div className="neon-alert p-4 sm:p-5 md:p-6 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-3/4 lg:w-1/2">
+          <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 text-[#EF4444] flex-shrink-0" />
+          <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
       ) : isSafe ? (
-        <div className="neon-alert p-3 sm:p-4 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)] w-full md:w-3/4 lg:w-1/2">
-          <Droplets className="w-5 h-5 sm:w-6 sm:h-6 text-[#22C55E] flex-shrink-0" />
-          <span className="font-black text-sm sm:text-base text-[#E5E7EB] leading-tight">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
+        <div className="neon-alert p-4 sm:p-5 md:p-6 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)] w-full md:w-3/4 lg:w-1/2">
+          <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-[#22C55E] flex-shrink-0" />
+          <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
         </div>
       ) : null}
 

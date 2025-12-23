@@ -14,9 +14,9 @@ interface StatProps {
 const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, isAlert, isSafe }) => {
   // Dynamic border for Alert / Safe State
   const borderClass = isAlert
-    ? 'border-[#EF4444] border-2 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.4)] neon-glow-red'
+    ? 'border-[#EF4444] border-2 animate-pulse shadow-md subtle-glow-red'
     : isSafe
-      ? 'border-[#22C55E] border-2 animate-pulse shadow-[0_0_30px_rgba(34,197,94,0.35)] neon-glow-green'
+      ? 'border-[#22C55E] border-2 animate-pulse shadow-md subtle-glow-green'
       : 'border-[#38BDF8]/20 border hover:border-[#38BDF8]/40';
 
   const colorClasses = {
