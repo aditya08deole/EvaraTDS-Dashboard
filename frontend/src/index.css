@@ -6,8 +6,18 @@ html, body, #root {
 	height: 100%;
 }
 
-/* increase base font-size for larger UI everywhere */
-html { font-size: 18px; }
+/* Responsive base font-size */
+html { 
+	font-size: 16px; /* Base size for desktop */
+}
+
+@media (max-width: 1920px) {
+	html { font-size: 15px; }
+}
+
+@media (max-width: 1440px) {
+	html { font-size: 14px; }
+}
 
 body {
 	margin: 0;
