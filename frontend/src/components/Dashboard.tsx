@@ -57,8 +57,8 @@ const Dashboard = () => {
               <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin-slow text-[#38BDF8]" />
               <span>Updated: {format(lastUpdated, 'HH:mm:ss')}</span>
             </div>
-            <div className="text-[#6B7280] text-xs font-medium">
-              <span>Firmware: v2.1.3</span>
+            <div className="text-[#6B7280] text-xs font-medium text-center sm:text-right">
+              <span>Firmware: v2.1.3 | Status: Online</span>
             </div>
           </div>
         </div>
@@ -129,7 +129,24 @@ const Dashboard = () => {
                   <XAxis dataKey="time" stroke="#E5E7EB" fontSize={10} sm:fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <YAxis stroke="#E5E7EB" fontSize={10} sm:fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #38BDF8', borderRadius: '12px', color: '#E5E7EB', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', fontSize: '10px sm:fontSize: 12px', fontWeight: 700, padding: '4px 8px sm:padding: 6px 10px' }}
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(22, 30, 46, 0.95)', 
+                      border: '2px solid #38BDF8', 
+                      borderRadius: '12px', 
+                      color: '#E5E7EB', 
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(56, 189, 248, 0.1) inset', 
+                      fontSize: '14px', 
+                      fontWeight: 700, 
+                      padding: '12px 16px',
+                      backdropFilter: 'blur(16px)'
+                    }}
+                    labelStyle={{ color: '#9CA3AF', fontSize: '12px', marginBottom: '4px' }}
+                    formatter={(value, name) => [
+                      <span style={{ color: name === 'tds' ? '#38BDF8' : '#E5E7EB', fontSize: '16px', fontWeight: 'bold' }}>
+                        {value} {name === 'tds' ? 'PPM' : ''}
+                      </span>, 
+                      name === 'tds' ? 'TDS Level' : name
+                    ]}
                   />
                   <Area type="monotone" dataKey="tds" stroke="#38BDF8" strokeWidth={4} fillOpacity={1} fill="url(#colorTds)" />
                   <Line type="monotone" dataKey={() => 150} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={3} dot={false} isAnimationActive={false}/>
@@ -157,7 +174,26 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
                   <XAxis dataKey="time" stroke="#E5E7EB" fontSize={10} sm:fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
                   <YAxis stroke="#E5E7EB" fontSize={10} sm:fontSize={12} tickLine={false} axisLine={false} fontWeight={700} />
-                  <Tooltip contentStyle={{ backgroundColor: '#161E2E', border: '2px solid #F59E0B', borderRadius: '10px', color: '#E5E7EB', fontSize: '10px sm:fontSize: 12px', fontWeight: 700, boxShadow: '0 4px 16px rgba(0,0,0,0.5)', padding: '4px 8px sm:padding: 6px 10px' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(22, 30, 46, 0.95)', 
+                      border: '2px solid #F59E0B', 
+                      borderRadius: '12px', 
+                      color: '#E5E7EB', 
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(245, 158, 11, 0.1) inset', 
+                      fontSize: '14px', 
+                      fontWeight: 700, 
+                      padding: '12px 16px',
+                      backdropFilter: 'blur(16px)'
+                    }}
+                    labelStyle={{ color: '#9CA3AF', fontSize: '12px', marginBottom: '4px' }}
+                    formatter={(value, name) => [
+                      <span style={{ color: name === 'temp' ? '#F59E0B' : '#E5E7EB', fontSize: '16px', fontWeight: 'bold' }}>
+                        {value} {name === 'temp' ? '°C' : ''}
+                      </span>, 
+                      name === 'temp' ? 'Temperature' : name
+                    ]}
+                  />
                   <Area type="monotone" dataKey="temp" stroke="#F59E0B" strokeWidth={4} fillOpacity={1} fill="url(#colorTemp)" />
                 </AreaChart>
               </ResponsiveContainer>
