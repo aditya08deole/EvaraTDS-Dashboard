@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Ensure this matches your backend URL (default FastAPI port is 8000)
-const API_URL = 'http://localhost:8000';
+// Use environment variable for API URL, fallback to relative path for Vercel deployment
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 // Use the v1 API prefix from backend settings
 export const getDashboardData = async () => {
