@@ -11,7 +11,6 @@ html, body, #root {
 html { 
 	font-size: 12px; /* Reduced base size */
 }
-}
 
 @media (max-width: 1440px) {
 	html { font-size: 14px; }
