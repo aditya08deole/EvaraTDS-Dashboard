@@ -44,13 +44,13 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-2 leading-tight">EvaraTDS Dashboard</h1>
+          <h1 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-2 leading-tight">EvaraTDS Dashboard</h1>
           <p className="text-[#E5E7EB] text-sm lg:text-base font-semibold">System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-3">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] lg:h-[52px] w-auto object-contain" />
-            <img src="/IIITH.png" alt="IIITH" className="h-[44px] lg:h-[52px] w-auto object-contain" />
+          <div className="flex items-center gap-3">
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[48px] lg:h-[56px] w-auto object-contain" />
+            <img src="/IIITH.png" alt="IIITH" className="h-[48px] lg:h-[56px] w-auto object-contain" />
           </div>
           <div className="flex items-center gap-2 text-[#9CA3AF] font-medium text-sm">
             <RefreshCw className="w-4 h-4 animate-spin-slow text-[#38BDF8]" />
@@ -61,19 +61,19 @@ const Dashboard = () => {
 
       {/* Alert Banner */}
       {isCritical ? (
-        <div className="neon-alert p-2 rounded-xl flex items-center gap-2 shadow-xl">
-          <AlertTriangle className="w-5 h-5 text-[#EF4444] flex-shrink-0" />
-          <span className="font-black text-sm text-[#E5E7EB]">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
+        <div className="neon-alert p-4 rounded-xl flex items-center gap-3 shadow-xl">
+          <AlertTriangle className="w-6 h-6 text-[#EF4444] flex-shrink-0" />
+          <span className="font-black text-base text-[#E5E7EB]">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
       ) : isSafe ? (
-        <div className="neon-alert p-2 rounded-xl flex items-center gap-2 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)]">
-          <Droplets className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
-          <span className="font-black text-sm text-[#E5E7EB]">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
+        <div className="neon-alert p-4 rounded-xl flex items-center gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)]">
+          <Droplets className="w-6 h-6 text-[#22C55E] flex-shrink-0" />
+          <span className="font-black text-base text-[#E5E7EB]">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
         </div>
       ) : null}
 
       {/* Stat Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 relative">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-[#38BDF8]/5 via-transparent to-[#0EA5E9]/5 rounded-2xl blur-xl -z-10"></div>
         <StatCard 
           label="TDS" 
@@ -101,13 +101,13 @@ const Dashboard = () => {
       </div>
 
       {/* Charts Area - Side by Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 overflow-hidden relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-80 overflow-hidden relative">
         <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#38BDF8]/30 to-transparent"></div>
 
         {/* Left: TDS Chart */}
-        <div className="glass-card p-3 lg:p-4 rounded-xl flex flex-col">
-          <h3 className="text-[#E5E7EB] font-black text-lg lg:text-xl mb-2 flex items-center gap-2">
-            <Activity className="w-5 h-5 lg:w-6 lg:h-6 text-[#38BDF8]"/> TDS Trends (Last Hour)
+        <div className="glass-card p-4 lg:p-5 rounded-xl flex flex-col">
+          <h3 className="text-[#E5E7EB] font-black text-xl lg:text-2xl mb-3 flex items-center gap-3">
+            <Activity className="w-6 h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> TDS Trends (Last Hour)
           </h3>
           <div className="w-full flex-1" style={{ minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -132,9 +132,9 @@ const Dashboard = () => {
           </div>
 
         {/* Right: Temperature Chart */}
-        <div className="glass-card p-3 lg:p-4 rounded-xl flex flex-col">
-          <h3 className="text-[#E5E7EB] font-black text-lg lg:text-xl mb-2 flex items-center gap-2">
-            <Thermometer className="w-5 h-5 lg:w-6 lg:h-6 text-[#38BDF8]"/> Temperature Trends (Last Hour)
+        <div className="glass-card p-4 lg:p-5 rounded-xl flex flex-col">
+          <h3 className="text-[#E5E7EB] font-black text-xl lg:text-2xl mb-3 flex items-center gap-3">
+            <Thermometer className="w-6 h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> Temperature Trends (Last Hour)
           </h3>
           <div className="w-full flex-1" style={{ minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
