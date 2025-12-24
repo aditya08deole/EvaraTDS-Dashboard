@@ -5,38 +5,32 @@ import Dashboard from './components/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
-import Onboarding from './pages/Onboarding';
 import { useRefresh } from './hooks/useRefresh';
+import { useAuthStore } from './store/useAuthStore';
 import { useSettingsStore } from './store/useSettingsStore';
-import { RedirectToSignIn, SignedIn, SignedOut, useAuth } from '@clerk/clerk-react';
-import { AuthInterceptor } from './components/AuthInterceptor';
 import './index.css';
 
-// Protected Route using Clerk session
+// Protected Route Component
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { isSignedIn } = useAuth();
-  return isSignedIn ? children : <RedirectToSignIn />;
+  const { isAuthenticated } = useAuthStore();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
   useRefresh(10000);
+  const { initialize } = useAuthStore();
   const { loadSettings } = useSettingsStore();
 
   // Initialize auth and settings on app start
   useEffect(() => {
+    initialize();
     loadSettings();
-  }, [loadSettings]);
+  }, [initialize, loadSettings]);
 
   return (
     <Router>
-      <AuthInterceptor />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/onboarding" element={
-          <SignedIn>
-            <GlassLayout><Onboarding /></GlassLayout>
-          </SignedIn>
-        } />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
