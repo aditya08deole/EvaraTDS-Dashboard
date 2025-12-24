@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 };
 
 function App() {
-  useRefresh(10000);
+  useRefresh(1000); // Ultra-fast 1-second refresh
   const { initialize } = useAuthStore();
   const { loadSettings } = useSettingsStore();
 

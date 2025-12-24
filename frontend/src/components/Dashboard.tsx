@@ -23,9 +23,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(); // Initial load
-    const interval = setInterval(fetchData, settings.refreshInterval); // Use settings refresh interval
+    const interval = setInterval(fetchData, 1000); // Ultra-fast 1-second updates
     return () => clearInterval(interval);
-  }, [settings.refreshInterval]);
+  }, []);
 
   if (loading) {
     return (
@@ -192,8 +192,9 @@ const Dashboard = () => {
                     strokeWidth={3} 
                     fillOpacity={1} 
                     fill="url(#colorTds)"
-                    animationDuration={1500}
-                    animationEasing="ease-in-out"
+                    animationDuration={300}
+                    animationEasing="ease-out"
+                    isAnimationActive={true}
                   />
                   <Line 
                     type="monotone" 
@@ -281,8 +282,9 @@ const Dashboard = () => {
                     strokeWidth={3} 
                     fillOpacity={1} 
                     fill="url(#colorTemp)"
-                    animationDuration={1500}
-                    animationEasing="ease-in-out"
+                    animationDuration={300}
+                    animationEasing="ease-out"
+                    isAnimationActive={true}
                   />
                 </AreaChart>
               </ResponsiveContainer>
