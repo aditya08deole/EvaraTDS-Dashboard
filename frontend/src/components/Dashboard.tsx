@@ -89,9 +89,9 @@ const Dashboard = () => {
       ) : null}
 
       {/* Stat Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 relative items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 relative items-stretch">
         <div className="absolute inset-0 bg-gradient-to-r from-[#38BDF8]/5 via-transparent to-[#0EA5E9]/5 rounded-2xl blur-xl -z-10"></div>
-        <div className="h-36 sm:h-40 lg:h-44 xl:h-48 sm:col-span-2 lg:col-span-1"><StatCard 
+        <div className="h-28 sm:h-32 lg:h-36 sm:col-span-2 lg:col-span-1"><StatCard 
           label="TDS" 
           value={latest.tds.toFixed(0)} 
           unit="PPM" 
@@ -100,14 +100,14 @@ const Dashboard = () => {
           isAlert={isCritical}
           isSafe={isSafe}
         /></div>
-        <div className="h-36 sm:h-40 lg:h-44 xl:h-48"><StatCard 
+        <div className="h-28 sm:h-32 lg:h-36"><StatCard 
           label="Temperature" 
           value={latest.temp.toFixed(1)} 
           unit="°C" 
           icon={Thermometer} 
-          color="amber" 
+          color="purple" 
         /></div>
-        <div className="h-36 sm:h-40 lg:h-44 xl:h-48"><StatCard 
+        <div className="h-28 sm:h-32 lg:h-36"><StatCard 
           label="Sensor Signal" 
           value={latest.voltage.toFixed(3)} 
           unit="V" 
@@ -117,17 +117,17 @@ const Dashboard = () => {
       </div>
 
       {/* Charts Area - Responsive */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 h-64 sm:h-80 md:h-96 lg:h-96 xl:h-[420px] overflow-hidden relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 h-56 sm:h-64 md:h-72 lg:h-80 xl:h-[340px] overflow-hidden relative">
         <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#38BDF8]/30 to-transparent"></div>
 
         {/* Left: TDS Chart */}
-        <div className="glass-card p-2 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden">
+        <div className="glass-card p-2 sm:p-3 lg:p-4 rounded-xl flex flex-col relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#38BDF8]/5 rounded-full blur-3xl"></div>
-          <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
-            <Activity className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> 
+          <h3 className="text-[#E5E7EB] font-black text-base sm:text-lg lg:text-xl mb-2 flex items-center gap-2 relative z-10">
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#38BDF8]"/> 
             <span className="hidden sm:inline">TDS Trends (Last Hour)</span>
             <span className="sm:hidden">TDS Trends</span>
-            <span className="ml-auto text-sm font-bold text-[#38BDF8] bg-[#38BDF8]/10 px-3 py-1 rounded-lg border border-[#38BDF8]/30">
+            <span className="ml-auto text-xs font-bold text-[#38BDF8] bg-[#38BDF8]/10 px-2 py-1 rounded-lg border border-[#38BDF8]/30">
               {latest.tds.toFixed(0)} PPM
             </span>
           </h3>
@@ -149,7 +149,7 @@ const Dashboard = () => {
                   <XAxis 
                     dataKey="time" 
                     stroke="#9CA3AF" 
-                    fontSize={10} 
+                    fontSize={9} 
                     tickLine={false} 
                     axisLine={{ stroke: '#1F2937', strokeWidth: 2 }} 
                     fontWeight={600}
@@ -157,28 +157,28 @@ const Dashboard = () => {
                   />
                   <YAxis 
                     stroke="#9CA3AF" 
-                    fontSize={10} 
+                    fontSize={9} 
                     tickLine={false} 
                     axisLine={{ stroke: '#1F2937', strokeWidth: 2 }} 
                     fontWeight={600}
                     dx={-5}
-                    label={{ value: 'PPM', angle: -90, position: 'insideLeft', style: { fill: '#9CA3AF', fontWeight: 700 } }}
+                    label={{ value: 'PPM', angle: -90, position: 'insideLeft', style: { fill: '#9CA3AF', fontWeight: 600, fontSize: 10 } }}
                   />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'rgba(11, 15, 26, 0.98)', 
                       border: '2px solid #38BDF8', 
-                      borderRadius: '16px', 
+                      borderRadius: '12px', 
                       color: '#E5E7EB', 
                       boxShadow: '0 20px 60px rgba(56, 189, 248, 0.3), 0 0 0 1px rgba(56, 189, 248, 0.2) inset', 
-                      fontSize: '14px', 
+                      fontSize: '12px', 
                       fontWeight: 700, 
-                      padding: '16px 20px',
+                      padding: '12px 16px',
                       backdropFilter: 'blur(24px)'
                     }}
-                    labelStyle={{ color: '#38BDF8', fontSize: '13px', marginBottom: '8px', fontWeight: 800 }}
+                    labelStyle={{ color: '#38BDF8', fontSize: '11px', marginBottom: '6px', fontWeight: 800 }}
                     formatter={(value: any, name: any) => [
-                      <span style={{ color: '#E5E7EB', fontSize: '18px', fontWeight: 900 }}>
+                      <span style={{ color: '#E5E7EB', fontSize: '15px', fontWeight: 900 }}>
                         {Number(value).toFixed(1)} PPM
                       </span>, 
                       <span style={{ color: '#9CA3AF' }}>TDS Level</span>
@@ -189,21 +189,11 @@ const Dashboard = () => {
                     type="monotone" 
                     dataKey="tds" 
                     stroke="url(#colorTdsStroke)" 
-                    strokeWidth={3} 
+                    strokeWidth={2.5} 
                     fillOpacity={1} 
                     fill="url(#colorTds)"
                     animationDuration={1500}
                     animationEasing="ease-in-out"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey={() => settings.tdsThreshold} 
-                    stroke="#ef4444" 
-                    strokeDasharray="8 8" 
-                    strokeWidth={2.5} 
-                    dot={false} 
-                    isAnimationActive={false}
-                    label={{ value: `Threshold: ${settings.tdsThreshold}`, position: 'insideTopRight', fill: '#ef4444', fontSize: 11, fontWeight: 700 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -211,13 +201,13 @@ const Dashboard = () => {
           </div>
 
         {/* Right: Temperature Chart */}
-        <div className="glass-card p-2 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F59E0B]/5 rounded-full blur-3xl"></div>
-          <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
-            <Thermometer className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#F59E0B]"/> 
+        <div className="glass-card p-2 sm:p-3 lg:p-4 rounded-xl flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#A855F7]/5 rounded-full blur-3xl"></div>
+          <h3 className="text-[#E5E7EB] font-black text-base sm:text-lg lg:text-xl mb-2 flex items-center gap-2 relative z-10">
+            <Thermometer className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#A855F7]"/> 
             <span className="hidden sm:inline">Temperature Trends (Last Hour)</span>
             <span className="sm:hidden">Temperature</span>
-            <span className="ml-auto text-sm font-bold text-[#F59E0B] bg-[#F59E0B]/10 px-3 py-1 rounded-lg border border-[#F59E0B]/30">
+            <span className="ml-auto text-xs font-bold text-[#A855F7] bg-[#A855F7]/10 px-2 py-1 rounded-lg border border-[#A855F7]/30">
               {latest.temp.toFixed(1)} °C
             </span>
           </h3>
@@ -226,13 +216,13 @@ const Dashboard = () => {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8}/>
-                      <stop offset="50%" stopColor="#F97316" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#F97316" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#A855F7" stopOpacity={0.8}/>
+                      <stop offset="50%" stopColor="#9333EA" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#9333EA" stopOpacity={0.1}/>
                     </linearGradient>
                     <linearGradient id="colorTempStroke" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#F59E0B"/>
-                      <stop offset="100%" stopColor="#F97316"/>
+                      <stop offset="0%" stopColor="#A855F7"/>
+                      <stop offset="100%" stopColor="#9333EA"/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.5} />
@@ -247,39 +237,39 @@ const Dashboard = () => {
                   />
                   <YAxis 
                     stroke="#9CA3AF" 
-                    fontSize={10} 
+                    fontSize={9} 
                     tickLine={false} 
                     axisLine={{ stroke: '#1F2937', strokeWidth: 2 }} 
                     fontWeight={600}
                     dx={-5}
-                    label={{ value: '°C', angle: -90, position: 'insideLeft', style: { fill: '#9CA3AF', fontWeight: 700 } }}
+                    label={{ value: '°C', angle: -90, position: 'insideLeft', style: { fill: '#9CA3AF', fontWeight: 600, fontSize: 10 } }}
                   />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'rgba(11, 15, 26, 0.98)', 
-                      border: '2px solid #F59E0B', 
-                      borderRadius: '16px', 
+                      border: '2px solid #A855F7', 
+                      borderRadius: '12px', 
                       color: '#E5E7EB', 
-                      boxShadow: '0 20px 60px rgba(245, 158, 11, 0.3), 0 0 0 1px rgba(245, 158, 11, 0.2) inset', 
-                      fontSize: '14px', 
+                      boxShadow: '0 20px 60px rgba(168, 85, 247, 0.3), 0 0 0 1px rgba(168, 85, 247, 0.2) inset', 
+                      fontSize: '12px', 
                       fontWeight: 700, 
-                      padding: '16px 20px',
+                      padding: '12px 16px',
                       backdropFilter: 'blur(24px)'
                     }}
-                    labelStyle={{ color: '#F59E0B', fontSize: '13px', marginBottom: '8px', fontWeight: 800 }}
+                    labelStyle={{ color: '#A855F7', fontSize: '11px', marginBottom: '6px', fontWeight: 800 }}
                     formatter={(value: any, name: any) => [
-                      <span style={{ color: '#E5E7EB', fontSize: '18px', fontWeight: 900 }}>
+                      <span style={{ color: '#E5E7EB', fontSize: '15px', fontWeight: 900 }}>
                         {Number(value).toFixed(2)} °C
                       </span>, 
                       <span style={{ color: '#9CA3AF' }}>Temperature</span>
                     ]}
-                    cursor={{ stroke: '#F59E0B', strokeWidth: 2, strokeDasharray: '5 5' }}
+                    cursor={{ stroke: '#A855F7', strokeWidth: 2, strokeDasharray: '5 5' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="temp" 
                     stroke="url(#colorTempStroke)" 
-                    strokeWidth={3} 
+                    strokeWidth={2.5} 
                     fillOpacity={1} 
                     fill="url(#colorTemp)"
                     animationDuration={1500}
