@@ -7,6 +7,7 @@ export interface User {
   role: 'admin' | 'viewer';
   email: string;
   createdAt: Date;
+  fullName?: string;
 }
 
 export interface AuthState {
@@ -18,8 +19,8 @@ export interface AuthState {
 // Simplified demo auth - In production, use Firebase/Auth0/Supabase
 class AuthService {
   private static DEMO_USERS = {
-    admin: { username: 'admin', password: 'admin123', role: 'admin' as const },
-    viewer: { username: 'viewer', password: 'viewer123', role: 'viewer' as const }
+    admin: { username: 'Aditya.Evaratech', password: 'Aditya@08', role: 'admin' as const, fullName: 'Aditya Deole' },
+    viewer: { username: 'viewer', password: 'viewer123', role: 'viewer' as const, fullName: 'Guest Viewer' }
   };
 
   // Login with role validation
@@ -37,7 +38,8 @@ class AuthService {
         username: user.username,
         role: user.role,
         email: `${user.username}@evaratds.com`,
-        createdAt: new Date()
+        createdAt: new Date(),
+        fullName: (user as any).fullName || user.username
       };
       
       // Store in localStorage (in prod, use httpOnly cookies)

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
     if (success) {
       navigate('/dashboard');
     } else {
-      setError('Invalid credentials. Try admin/admin123 or viewer/viewer123');
+      setError('Invalid credentials. Try Aditya.Evaratech/Aditya@08 or viewer/viewer123');
     }
     
     setLoading(false);
@@ -110,8 +110,8 @@ const Login: React.FC = () => {
             <div className="space-y-2 text-xs">
               <div className="bg-[#161E2E] p-3 rounded border border-[#1F2937]">
                 <p className="text-[#38BDF8] font-bold mb-1">Admin Access</p>
-                <p className="text-[#9CA3AF]">Username: <span className="text-[#E5E7EB] font-mono">admin</span></p>
-                <p className="text-[#9CA3AF]">Password: <span className="text-[#E5E7EB] font-mono">admin123</span></p>
+                <p className="text-[#9CA3AF]">Username: <span className="text-[#E5E7EB] font-mono">Aditya.Evaratech</span></p>
+                <p className="text-[#9CA3AF]">Password: <span className="text-[#E5E7EB] font-mono">Aditya@08</span></p>
               </div>
               <div className="bg-[#161E2E] p-3 rounded border border-[#1F2937]">
                 <p className="text-[#22C55E] font-bold mb-1">Viewer Access</p>
