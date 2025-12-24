@@ -6,3 +6,6 @@ pydantic-settings
 python-dotenv
 httpx
 mangum
+PyJWT[crypto]
+slowapi
+python-multipart

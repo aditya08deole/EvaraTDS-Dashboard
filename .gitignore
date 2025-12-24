@@ -5,11 +5,13 @@ backend/__pycache__/
 backend/*.pyc
 backend/.pytest_cache/
 
-# Environment variables
+# Environment variables (IMPORTANT: Never commit .env files)
 .env
 .env.local
 .env.production
+.env.development
 backend/.env
+frontend/.env
 
 # Build outputs
 frontend/dist/

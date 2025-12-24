@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { useAuthStore } from '../store/useAuthStore';
 import { Save, RotateCcw, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useUser } from '@clerk/clerk-react';
 
 const Settings: React.FC = () => {
   const { settings, saveSettings, resetToDefaults, loadSettings } = useSettingsStore();
-  const { user } = useAuthStore();
+  const { user } = useUser();
   const [tdsThreshold, setTdsThreshold] = useState(settings.tdsThreshold);
   const [tempThreshold, setTempThreshold] = useState(settings.tempThreshold);
   const [alertEmail, setAlertEmail] = useState(settings.alertEmail);
@@ -24,7 +24,9 @@ const Settings: React.FC = () => {
   }, [settings]);
 
   // Admin-only check
-  const isAdmin = user?.role === 'admin';
+  const email = user?.primaryEmailAddress?.emailAddress || '';
+  const role = (user?.publicMetadata as any)?.role as string | undefined;
+  const isAdmin = role === 'admin' || email.endsWith('@evaratds.com');
 
   const handleSave = () => {
     if (!isAdmin) return;
@@ -36,7 +38,7 @@ const Settings: React.FC = () => {
         tdsThreshold,
         tempThreshold,
         alertEmail
-      }, user?.username || 'unknown');
+      }, user?.fullName || email || 'unknown');
       
       setSaveStatus('success');
       
@@ -65,7 +67,7 @@ const Settings: React.FC = () => {
             This page requires administrator privileges.
           </p>
           <p className="text-[#6B7280] text-sm">
-            You are logged in as <span className="text-[#22C55E] font-semibold">{user?.username}</span> (Viewer Role)
+            You are logged in as <span className="text-[#22C55E] font-semibold">{user?.fullName || email}</span> (Viewer Role)
           </p>
         </div>
       </div>
