@@ -71,7 +71,7 @@ const Dashboard = () => {
           <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
       ) : isSafe ? (
-        <div className="neon-alert p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border border-[#22C55E]/20 animate-pulse shadow-[0_0_20px_rgba(34,197,94,0.45)] w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
+        <div className="glass-card p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border-2 border-[#22C55E] bg-gradient-to-r from-[#22C55E]/10 to-[#22C55E]/5 neon-glow-green w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
           <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-[#22C55E] flex-shrink-0" />
           <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
         </div>
