@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(); // Initial load
-    const interval = setInterval(fetchData, 10000); // Poll every 10s
+    const interval = setInterval(fetchData, 1000); // Ultra-fast: Poll every 1 second
     return () => clearInterval(interval);
   }, []);
 
