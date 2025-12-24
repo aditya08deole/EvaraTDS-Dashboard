@@ -21,11 +21,20 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(); // Initial load
-    const interval = setInterval(fetchData, 1000); // Ultra-fast: Poll every 1 second
+    const interval = setInterval(fetchData, 3000); // Optimized: Poll every 3 seconds
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-[#38BDF8] text-3xl font-bold">Initializing EvaraTDS...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse text-[#38BDF8] text-2xl sm:text-3xl font-bold mb-4">Loading Dashboard...</div>
+          <div className="text-[#9CA3AF] text-sm">Connecting to ThingSpeak</div>
+        </div>
+      </div>
+    );
+  }
 
   const latest = data?.latest || { tds: 0, temp: 0, voltage: 0 };
   const isCritical = latest.tds > 150;
