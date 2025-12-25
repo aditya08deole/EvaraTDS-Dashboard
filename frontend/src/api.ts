@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-// ThingSpeak Configuration - Using environment variables
-const THINGSPEAK_CHANNEL_ID = import.meta.env.VITE_THINGSPEAK_CHANNEL_ID;
-const THINGSPEAK_READ_KEY = import.meta.env.VITE_THINGSPEAK_READ_KEY;
+// ThingSpeak Configuration
+// NOTE: Read API keys for PUBLIC channels are NOT secret - they're meant to be public
+// Only WRITE API keys should be kept secret
+const THINGSPEAK_CHANNEL_ID = import.meta.env.VITE_THINGSPEAK_CHANNEL_ID || '2713286';
+const THINGSPEAK_READ_KEY = import.meta.env.VITE_THINGSPEAK_READ_KEY || 'EHEK3A1XD48TY98B';
 const THINGSPEAK_API = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/feeds.json`;
 
 // Optimized: Fetch live data with reduced payload

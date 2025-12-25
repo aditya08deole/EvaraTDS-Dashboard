@@ -28,20 +28,28 @@
 
 ### Required Secrets
 
-#### Telegram Bot Token
+#### 🔒 ACTUALLY SECRET (Never expose these):
+
+**Telegram Bot Token**
 - Get from: [@BotFather](https://t.me/BotFather) on Telegram
 - Format: `1234567890:ABCdefGHIjklMNOpqrsTUVwxyz`
 - Used for: Sending alerts via Telegram
+- ⚠️ **CRITICAL**: If exposed, anyone can send messages as your bot
 
-#### ThingSpeak Keys
+**Authentication Passwords**
+- Admin password for dashboard access
+- Choose strong passwords for admin and viewer accounts
+- Change default passwords in production
+- Use password manager to generate secure passwords
+
+#### ✅ PUBLIC (Safe to commit - required for functionality):
+
+**ThingSpeak Read API Keys**
 - Get from: [ThingSpeak Dashboard](https://thingspeak.com/)
 - Channel ID: Your channel number
-- Read API Key: Public read key for your channel
-
-#### Authentication Passwords
-- Choose strong passwords for admin and viewer accounts
-- Change default passwords immediately
-- Use password manager to generate secure passwords
+- Read API Key: Public read key for public channels
+- ℹ️ **NOTE**: Read keys for PUBLIC channels are meant to be shared. Only WRITE keys are secret.
+- Used for: Fetching sensor data for display
 
 ### Vercel Deployment
 
