@@ -19,8 +19,8 @@ export interface AuthState {
 // Simplified demo auth - In production, use Firebase/Auth0/Supabase
 class AuthService {
   private static DEMO_USERS = {
-    admin: { username: 'Aditya.Evaratech', password: import.meta.env.VITE_ADMIN_PASSWORD || 'admin123', role: 'admin' as const, fullName: 'Aditya Deole' },
-    viewer: { username: 'viewer', password: import.meta.env.VITE_VIEWER_PASSWORD || 'viewer123', role: 'viewer' as const, fullName: 'Guest Viewer' }
+    admin: { username: 'Aditya.Evaratech', password: import.meta.env.VITE_ADMIN_PASSWORD, role: 'admin' as const, fullName: 'Aditya Deole' },
+    viewer: { username: 'viewer', password: import.meta.env.VITE_VIEWER_PASSWORD, role: 'viewer' as const, fullName: 'Guest Viewer' }
   };
 
   // Login with role validation

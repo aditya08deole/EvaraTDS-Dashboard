@@ -32,7 +32,7 @@ curl https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
 ### Step 4: Add Recipient
 
 1. Open http://localhost:5173
-2. Login (admin: `Aditya.Evaratech` / `Aditya@08`)
+2. Login (admin: `Aditya.Evaratech` / `[see .env file]`)
 3. Go to **Alerts** page
 4. Click **Add Recipient**
 5. Enter your name and chat ID

@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # ThingSpeak Configuration
     THINGSPEAK_CHANNEL_ID: str = "2713286"
-    THINGSPEAK_READ_KEY: str = "EHEK3A1XD48TY98B"
+    THINGSPEAK_READ_KEY: str = ""
 
     # Alert Thresholds
     TDS_ALERT_THRESHOLD: float = 150.0

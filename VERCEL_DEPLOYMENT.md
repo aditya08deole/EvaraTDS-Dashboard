@@ -13,22 +13,22 @@ You need to add these environment variables to your Vercel project:
 
 **Backend Environment Variables:**
 ```
-TELEGRAM_BOT_TOKEN=8507962260:AAHaRXknIvbEILzEgdK4rJ0rRcMNyV3q2NY
+TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
 TDS_ALERT_THRESHOLD=150.0
 TEMP_ALERT_THRESHOLD=35.0
 ALERT_COOLDOWN_MINUTES=15
 DATABASE_URL=sqlite:///./alerts.db
-THINGSPEAK_CHANNEL_ID=2713286
-THINGSPEAK_READ_KEY=EHEK3A1XD48TY98B
+THINGSPEAK_CHANNEL_ID=your_channel_id
+THINGSPEAK_READ_KEY=your_read_api_key
 ```
 
 **Frontend Environment Variables (for Vite build):**
 ```
-VITE_API_BASE_URL=https://evara-tds-dashboard.vercel.app/api/v1
-VITE_THINGSPEAK_CHANNEL_ID=2713286
-VITE_THINGSPEAK_READ_KEY=EHEK3A1XD48TY98B
-VITE_ADMIN_PASSWORD=Aditya@08
-VITE_VIEWER_PASSWORD=viewer123
+VITE_API_BASE_URL=https://your-project.vercel.app/api/v1
+VITE_THINGSPEAK_CHANNEL_ID=your_channel_id
+VITE_THINGSPEAK_READ_KEY=your_read_api_key
+VITE_ADMIN_PASSWORD=your_secure_admin_password
+VITE_VIEWER_PASSWORD=your_secure_viewer_password
 ```
 
 ### Important Notes:

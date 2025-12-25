@@ -84,7 +84,7 @@ npm run dev
 **Access:** http://localhost:5173
 
 **Login Credentials:**
-- Admin: `Aditya.Evaratech` / `Aditya@08`
+- Admin: `Aditya.Evaratech` / `[password in .env]`
 - Viewer: `user` / `pass@123`
 
 ---
