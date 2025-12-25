@@ -1,13 +1,33 @@
 # Vercel Deployment Guide for Evara TDS Platform
 
-## Environment Variables Setup
+## Step 1: Set Up Vercel Postgres
 
-You need to add these environment variables to your Vercel project:
+1. **Install Vercel CLI** (if not already installed):
+   ```bash
+   npm install -g vercel
+   ```
 
-### Go to Vercel Dashboard:
-1. Visit https://vercel.com/dashboard
-2. Select your project: `evara-tds-dashboard`
-3. Go to **Settings** → **Environment Variables**
+2. **Login to Vercel:**
+   ```bash
+   vercel login
+   ```
+
+3. **Link your project:**
+   ```bash
+   vercel link
+   ```
+
+4. **Create Postgres database:**
+   ```bash
+   vercel postgres create
+   ```
+   - Choose a name (e.g., `evara-tds-db`)
+   - Select your region
+   - This will automatically set `DATABASE_URL` in your Vercel project
+
+## Step 2: Environment Variables Setup
+
+Go to Vercel Dashboard → Project → Settings → Environment Variables
 
 ### Add these variables:
 
@@ -17,10 +37,11 @@ TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
 TDS_ALERT_THRESHOLD=150.0
 TEMP_ALERT_THRESHOLD=35.0
 ALERT_COOLDOWN_MINUTES=15
-DATABASE_URL=sqlite:///./alerts.db
 THINGSPEAK_CHANNEL_ID=your_channel_id
 THINGSPEAK_READ_KEY=your_read_api_key
 ```
+
+**Note:** `DATABASE_URL` is automatically set when you create Vercel Postgres - don't add it manually!
 
 **Frontend Environment Variables (for Vite build):**
 ```
@@ -31,57 +52,78 @@ VITE_ADMIN_PASSWORD=your_secure_admin_password
 VITE_VIEWER_PASSWORD=your_secure_viewer_password
 ```
 
-### Important Notes:
-- Make sure to select **Production**, **Preview**, and **Development** for all variables
-- After adding variables, redeploy the project
-
-## Quick Deploy Commands
+## Step 3: Deploy
 
 ```bash
-# Commit changes
 git add .
-git commit -m "Add serverless backend support and environment variables"
+git commit -m "Add Postgres support for production deployment"
 git push
-
-# Vercel will auto-deploy on push
 ```
 
-## Frontend Environment Variables
+Vercel will auto-deploy. Monitor at: https://vercel.com/dashboard
 
-The frontend is already configured with `.env.production` file that points to:
+## Step 4: Initialize Database
+
+After first deployment, the database tables will be created automatically.
+
+To verify:
+1. Go to Vercel Dashboard → Storage → Your Postgres DB
+2. Click "Data" tab
+3. You should see 3 tables: `alert_recipients`, `alert_history`, `alert_config`
+
+## Step 5: Add Your First Recipient
+
+**Option A - Via API:**
+```bash
+curl -X POST "https://your-project.vercel.app/api/v1/alerts/recipients" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Your Name",
+    "telegram_chat_id": "your_chat_id",
+    "role": "admin",
+    "is_active": true,
+    "channels": ["telegram"]
+  }'
 ```
-VITE_API_BASE_URL=https://evara-tds-dashboard.vercel.app/api/v1
+
+**Option B - Via Dashboard UI:**
+1. Go to https://your-project.vercel.app/alerts
+2. Click "Add Recipient"
+3. Fill in your details
+4. Submit
+
+## Step 6: Test Alerts
+
+1. Click "Send Test Alert" in the dashboard
+2. Check your Telegram for the message
+3. If received → Success! 🎉
+
+## Troubleshooting
+
+### Database Connection Issues
+```bash
+# Check DATABASE_URL is set
+vercel env ls
+
+# View deployment logs
+vercel logs
 ```
 
-This means API calls will go to the same domain (serverless functions on Vercel).
+### Tables Not Created
+The app auto-creates tables on first run. If issues:
+1. Check deployment logs for errors
+2. Verify DATABASE_URL format
+3. Ensure psycopg2-binary is in requirements.txt
 
-## Testing After Deployment
+### Bot Not Sending Messages
+1. Verify TELEGRAM_BOT_TOKEN is set correctly
+2. Check bot is not blocked by user
+3. Verify chat_id is correct (numeric)
 
-1. Visit your deployed site: https://evara-tds-dashboard.vercel.app
-2. Go to the **Alerts** page
-3. You should see:
-   - Bot Status: ✅ @EvaraTDS_bot
-   - Active Recipients: 1 (Aditya)
-4. Click "Send Test Alert" to verify
+## Production Benefits
 
-## Database Note
-
-⚠️ **Important**: SQLite doesn't work well with serverless functions because they're stateless. For production, you should migrate to a cloud database:
-
-### Recommended Options:
-1. **Vercel Postgres** (easiest)
-   - Run: `vercel postgres create`
-   - Will automatically set DATABASE_URL
-   
-2. **Supabase** (free tier available)
-   - Create account at supabase.com
-   - Create project → get PostgreSQL connection string
-   - Update DATABASE_URL in Vercel
-
-3. **PlanetScale** (MySQL, free tier)
-   - Similar setup to Supabase
-
-### For Now (Quick Fix):
-We can use **Vercel KV** (Redis-based) or **Vercel Postgres** for storing recipients.
-
-Would you like me to help you set up Vercel Postgres?
+✅ **Persistent Storage** - Data survives deployments
+✅ **Connection Pooling** - Optimized for serverless
+✅ **Auto-scaling** - Handles traffic spikes
+✅ **Backups** - Vercel handles automatic backups
+✅ **Fast Queries** - Indexed columns for performance
