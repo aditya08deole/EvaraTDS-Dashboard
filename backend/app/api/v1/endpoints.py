@@ -1,16 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from app.services.thingspeak import fetch_evara_data
 from app.schemas.sensor import DashboardData
 from app.core.config import settings
-from app.core.auth import get_current_user
 
 router = APIRouter()
 
 @router.get("/dashboard", response_model=DashboardData)
-async def get_dashboard_metrics(current_user: dict = Depends(get_current_user)):
+async def get_dashboard_metrics():
     """
-    Protected endpoint: Aggregates ThingSpeak data with analysis
-    Requires valid Clerk authentication token
+    Get dashboard metrics with ThingSpeak data and analysis
     
     1. Fetches raw data from ThingSpeak
     2. Runs analysis (Alert Logic)

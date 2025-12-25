@@ -6,7 +6,6 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.api.v1.endpoints import router as api_router
-from app.api.v1.users import router as users_router
 from app.api.v1.alerts import router as alerts_router
 from app.models.database import init_db
 
@@ -40,7 +39,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
-app.include_router(users_router, prefix="/api/v1")
 app.include_router(alerts_router, prefix="/api/v1")
 
 # Initialize alert database
@@ -49,9 +47,13 @@ async def startup_event():
     init_db()
 
 @app.get("/health")
-@limiter.limit("10/minute")
-def health_check():
-    return {"status": "active", "version": "3.0.0", "auth": "clerk"}
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "active", 
+        "version": "4.0.0", 
+        "features": ["alerts", "real-time", "telegram"]
+    }
 
 # Security headers middleware
 @app.middleware("http")
