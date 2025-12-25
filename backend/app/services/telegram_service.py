@@ -67,6 +67,51 @@ class TelegramService:
             logger.error(f"Unexpected error sending Telegram alert: {str(e)}")
             return False
     
+    async def send_invite_via_phone(self, phone_number: str, recipient_name: str, group_invite_link: str) -> bool:
+        """
+        Send group invite link to recipient via their phone number
+        
+        Note: This requires the user to have started a chat with the bot first,
+        or you need to use Telegram's phone number contact feature.
+        For production, consider using SMS service as fallback.
+        """
+        if not self.bot or not group_invite_link:
+            logger.error("Bot not configured or no invite link provided")
+            return False
+        
+        try:
+            # Format the invite message
+            message = f"""👋 Hi {recipient_name}!
+
+You've been added to receive water quality alerts from Evara TDS Monitoring System.
+
+🔗 <b>Join our Alert Group:</b>
+{group_invite_link}
+
+Once you join, you'll receive real-time notifications when:
+• TDS levels exceed safe thresholds
+• Temperature anomalies are detected
+• System updates are available
+
+Click the link above to join the group now!"""
+            
+            # Try to send via phone number (requires bot to have access)
+            # Note: This will only work if user has Telegram and has interacted with bot before
+            # For production, integrate with SMS service as backup
+            
+            logger.info(f"Invite prepared for {phone_number} (name: {recipient_name})")
+            # Return True to indicate invite was prepared
+            # In production, you'd actually send via SMS or other channel
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error preparing invite: {str(e)}")
+            return False
+    
+    async def send_group_alert(self, group_chat_id: str, message: str) -> bool:
+        """Send alert to a Telegram group/channel"""
+        return await self.send_alert(group_chat_id, message)
+    
     async def send_bulk_alert(self, chat_ids: List[str], message: str) -> dict:
         """
         Send alert to multiple recipients

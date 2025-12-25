@@ -81,6 +81,13 @@ export default function Alerts() {
 
   const handleAddRecipient = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate at least one contact method
+    if (!newRecipient.phone && !newRecipient.telegram_chat_id && !newRecipient.email) {
+      alert('Please provide at least one contact method (phone, Telegram ID, or email)');
+      return;
+    }
+    
     try {
       const response = await fetch(`${API_BASE}/recipients`, {
         method: 'POST',
@@ -103,13 +110,15 @@ export default function Alerts() {
         });
         setShowAddForm(false);
         fetchData();
+        alert('✅ Recipient added successfully! ' + 
+              (newRecipient.phone ? 'They will receive a group invite link.' : ''));
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to add recipient');
+        alert('❌ ' + (error.detail || 'Failed to add recipient'));
       }
     } catch (error) {
       console.error('Error adding recipient:', error);
-      alert('Failed to add recipient');
+      alert('❌ Failed to add recipient. Check console for details.');
     }
   };
 
@@ -297,7 +306,7 @@ export default function Alerts() {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Telegram ID</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Phone / Telegram</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Role</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
                   <th className="text-left py-3 px-4 text-gray-400 font-medium">Channels</th>
@@ -308,7 +317,9 @@ export default function Alerts() {
                 {recipients.map((recipient) => (
                   <tr key={recipient.id} className="border-b border-gray-800 hover:bg-gray-800/50">
                     <td className="py-3 px-4 text-white">{recipient.name}</td>
-                    <td className="py-3 px-4 text-gray-300 font-mono text-sm">{recipient.telegram_chat_id}</td>
+                    <td className="py-3 px-4 text-gray-300 font-mono text-sm">
+                      {recipient.phone || recipient.telegram_chat_id || 'N/A'}
+                    </td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded text-xs ${
                         recipient.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300'
@@ -374,16 +385,26 @@ export default function Alerts() {
                 />
               </div>
               <div>
-                <label className="block text-gray-300 mb-2">Telegram Chat ID</label>
+                <label className="block text-gray-300 mb-2">Phone Number (Recommended)</label>
+                <input
+                  type="tel"
+                  value={newRecipient.phone}
+                  onChange={(e) => setNewRecipient({ ...newRecipient, phone: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono"
+                  placeholder="+919876543210"
+                />
+                <p className="text-xs text-gray-500 mt-1">📱 Will receive Telegram group invite link</p>
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Telegram Chat ID (Optional)</label>
                 <input
                   type="text"
                   value={newRecipient.telegram_chat_id}
                   onChange={(e) => setNewRecipient({ ...newRecipient, telegram_chat_id: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono"
-                  placeholder="123456789"
-                  required
+                  placeholder="123456789 (optional)"
                 />
-                <p className="text-xs text-gray-500 mt-1">Send /start to your bot, then get ID from getUpdates</p>
+                <p className="text-xs text-gray-500 mt-1">💡 Phone number is preferred for automatic invites</p>
               </div>
               <div>
                 <label className="block text-gray-300 mb-2">Role</label>

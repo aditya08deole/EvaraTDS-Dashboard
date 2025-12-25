@@ -1,11 +1,12 @@
 """
-Alert API Endpoints - Production Postgres version
-Optimized for Vercel Postgres with connection pooling
+Alert API Endpoints - Simplified Telegram Group version
+Sends alerts directly to configured Telegram group/chat
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
+import os
 from app.models.alert import AlertRecipient, AlertHistory, AlertConfig, TestAlertRequest
 from app.models.postgres_db import (
     get_db, 
@@ -22,23 +23,40 @@ router = APIRouter(prefix="/alerts", tags=["alerts"])
 # Initialize database on module load
 init_db()
 
+# Get configured Telegram chat ID from environment
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "1362954575")
+
 # =====================
 # Recipients Management
 # =====================
 
 @router.post("/recipients", response_model=AlertRecipient, status_code=status.HTTP_201_CREATED)
 async def create_recipient(recipient: AlertRecipient, db: Session = Depends(get_db)):
-    """Add new alert recipient"""
+    """
+    Add new alert recipient and send them group invite
+    Now supports phone numbers - will send invite via Telegram/SMS
+    """
     try:
-        # Check if telegram_chat_id already exists
-        if recipient.telegram_chat_id:
+        # Validate phone number format if provided
+        if recipient.phone:
+            # Ensure it starts with country code
+            phone = recipient.phone.strip()
+            if not phone.startswith('+'):
+                if phone.startswith('91'):  # India
+                    phone = '+' + phone
+                else:
+                    phone = '+91' + phone  # Default to India
+            recipient.phone = phone
+        
+        # Check for duplicates
+        if recipient.phone:
             existing = db.query(DBAlertRecipient).filter(
-                DBAlertRecipient.telegram_chat_id == recipient.telegram_chat_id
+                DBAlertRecipient.phone == recipient.phone
             ).first()
             if existing:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Telegram chat ID already registered"
+                    detail=f"Phone number already registered for {existing.name}"
                 )
         
         db_recipient = DBAlertRecipient(
@@ -54,6 +72,22 @@ async def create_recipient(recipient: AlertRecipient, db: Session = Depends(get_
         db.add(db_recipient)
         db.commit()
         db.refresh(db_recipient)
+        
+        # Send group invite if phone number provided
+        if recipient.phone:
+            telegram_service = get_telegram_service()
+            group_invite_link = os.getenv("TELEGRAM_GROUP_INVITE_LINK", "")
+            
+            if group_invite_link:
+                try:
+                    await telegram_service.send_invite_via_phone(
+                        recipient.phone,
+                        recipient.name,
+                        group_invite_link
+                    )
+                except Exception as e:
+                    # Don't fail the whole request if invite fails
+                    print(f"Warning: Could not send invite to {recipient.phone}: {e}")
         
         return AlertRecipient(
             id=db_recipient.id,
@@ -253,16 +287,19 @@ async def update_config(config_update: AlertConfig, db: Session = Depends(get_db
 @router.get("/status")
 async def get_alert_status(db: Session = Depends(get_db)):
     """Get comprehensive alert system status"""
+    bot_configured = False
+    bot_username = None
+    
     try:
         telegram_service = get_telegram_service()
-        bot_info = await telegram_service.get_bot_info()
-        bot_configured = bot_info is not None
-        bot_username = bot_info.get('username') if bot_info else None
-    except:
-        bot_configured = False
-        bot_username = None
+        if telegram_service and telegram_service.bot:
+            bot_info = await telegram_service.get_bot_info()
+            if bot_info:
+                bot_configured = True
+                bot_username = bot_info.get('username')
+    except Exception as e:
+        print(f"Bot status check error: {e}")
     
-    recipients = db.query(DBAlertRecipient).filter(DBAlertRecipient.is_active == True).all()
     config = db.query(DBAlertConfig).first()
     history = db.query(DBAlertHistory).order_by(DBAlertHistory.created_at.desc()).first()
     
@@ -289,8 +326,9 @@ async def get_alert_status(db: Session = Depends(get_db)):
         "can_send_alert": can_send_alert,
         "bot_configured": bot_configured,
         "bot_username": bot_username,
-        "active_recipients": len(recipients),
-        "total_alerts_sent": total_alerts
+        "active_recipients": 1 if bot_configured else 0,  # Simplified: using group chat
+        "total_alerts_sent": total_alerts,
+        "alert_chat_id": TELEGRAM_CHAT_ID
     }
 
 # ===================
@@ -299,7 +337,7 @@ async def get_alert_status(db: Session = Depends(get_db)):
 
 @router.post("/test")
 async def send_test_alert(request: TestAlertRequest, db: Session = Depends(get_db)):
-    """Send test alert to all active recipients"""
+    """Send test alert to the Telegram group"""
     try:
         telegram_service = get_telegram_service()
         bot_info = await telegram_service.get_bot_info()
@@ -310,55 +348,52 @@ async def send_test_alert(request: TestAlertRequest, db: Session = Depends(get_d
                 detail="Telegram bot not configured"
             )
         
-        recipients = db.query(DBAlertRecipient).filter(DBAlertRecipient.is_active == True).all()
-        if not recipients:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No active recipients configured"
-            )
+        # Use group chat ID from environment
+        group_chat_id = os.getenv("TELEGRAM_GROUP_CHAT_ID", TELEGRAM_CHAT_ID)
+        recipients_count = db.query(DBAlertRecipient).filter(DBAlertRecipient.is_active == True).count()
         
-        success_count = 0
-        errors = []
-        notified_ids = []
-        
-        message = request.message or f"""🧪 <b>Test Alert</b>
+        message = request.message or f"""🧪 <b>Test Alert from Evara TDS Platform</b>
 
-This is a test message from Evara TDS Platform.
+This is a test message to verify the alert system is working.
 
 ✅ Bot: @{bot_info.get('username', 'Unknown')}
-✅ Recipients: {len(recipients)}
-✅ Alerts System: Online
+✅ Registered Recipients: {recipients_count}
+✅ Alert System: Online
 
 <i>Sent at {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</i>"""
         
-        for recipient in recipients:
-            if recipient.telegram_chat_id and 'telegram' in (recipient.channels or []):
-                try:
-                    await telegram_service.send_alert(recipient.telegram_chat_id, message)
-                    success_count += 1
-                    notified_ids.append(recipient.telegram_chat_id)
-                except Exception as e:
-                    errors.append(f"{recipient.name}: {str(e)}")
+        try:
+            await telegram_service.send_group_alert(group_chat_id, message)
+            success = True
+            error_msg = None
+        except Exception as e:
+            success = False
+            error_msg = str(e)
         
         # Log to history
         alert_history = DBAlertHistory(
             alert_type="test",
             severity="info",
             message=request.message or "Test alert",
-            recipients_notified=notified_ids,
+            recipients_notified=[group_chat_id] if success else [],
             channels_used=["telegram"],
-            delivery_status={"success": success_count, "failed": len(errors)},
-            recipient_count=len(recipients)
+            delivery_status={"success": 1 if success else 0, "failed": 0 if success else 1, "error": error_msg},
+            recipient_count=recipients_count
         )
         db.add(alert_history)
         db.commit()
         
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to send to group: {error_msg}"
+            )
+        
         return {
             "success": True,
-            "recipients_total": len(recipients),
-            "sent_successfully": success_count,
-            "failed": len(errors),
-            "errors": errors if errors else None,
+            "sent_to": "group",
+            "group_chat_id": group_chat_id,
+            "registered_recipients": recipients_count,
             "bot_username": bot_info.get('username')
         }
         

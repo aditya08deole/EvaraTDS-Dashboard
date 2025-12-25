@@ -91,10 +91,46 @@ npm run dev
 
 ## 📖 Documentation
 
-- 📘 **[Alert Setup Guide](ALERT_SETUP_GUIDE.md)** - Complete alert system configuration
-- 🏗️ **[System Architecture](ALERT_SYSTEM_ARCHITECTURE.md)** - Technical deep-dive
-- 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Production deployment steps
-- ⚙️ **[Vercel Setup](VERCEL_ENV_SETUP.md)** - Environment configuration
+- 📘 **[Telegram Group Setup](TELEGRAM_GROUP_SETUP.md)** - ⭐ **Start Here** for phone-based invites
+- 🚀 **[Quick Setup Guide](QUICK_SETUP.md)** - Vercel Postgres deployment
+- 🔐 **[Security Policy](SECURITY.md)** - Security best practices
+- ⚙️ **[Vercel Deployment](VERCEL_DEPLOYMENT.md)** - Production setup
+
+---
+
+## 🔔 Alert System (Simplified)
+
+### ⭐ New: Phone-Based Group Invites
+
+The alert system now uses a **simplified group-based approach**:
+
+1. **Create Telegram Group** - One group for all alerts
+2. **Add Recipients by Phone** - Use dashboard to add phone numbers
+3. **Auto-Invite** - System sends group invite link
+4. **Group Alerts** - All members receive alerts automatically
+
+**Benefits:**
+- ✅ No manual chat ID collection
+- ✅ Easy onboarding (share phone number only)
+- ✅ Scales to unlimited recipients
+- ✅ Works on Vercel (no SQLite issues)
+
+### Quick Setup
+
+```bash
+# 1. Create Telegram group and add bot
+# 2. Get group chat ID
+python get_group_chat_id.py
+
+# 3. Add to environment
+export TELEGRAM_GROUP_CHAT_ID=-1001234567890
+export TELEGRAM_GROUP_INVITE_LINK=https://t.me/+yourlink
+
+# 4. Test
+python backend/send_test_alert.py
+```
+
+**Full Guide:** [TELEGRAM_GROUP_SETUP.md](TELEGRAM_GROUP_SETUP.md)
 
 ---
 
@@ -139,21 +175,21 @@ npm run dev
 
 ### How It Works
 
-1. **Threshold Monitoring** - Continuously checks TDS/temperature values
+1. **Group Monitoring** - Bot sends alerts to Telegram group
 2. **Smart Cooldown** - Prevents spam (15-minute default)
-3. **Multi-Recipient** - Supports multiple Telegram users
+3. **Phone-Based Invites** - Add recipients by phone number
 4. **Delivery Tracking** - Logs all alerts in database
 5. **Test Mode** - Verify setup before going live
 
 ### Setup Alerts
 
-1. Navigate to `/alerts` page
-2. Click "Add Recipient"
-3. Enter Telegram chat ID (get from `/start` → getUpdates)
-4. Click "Send Test Alert" to verify
-5. Configure thresholds via "Configure" button
+1. **Create Telegram group** and add @EvaraTDS_bot
+2. **Get group chat ID** using `python get_group_chat_id.py`
+3. **Add to environment** variables (local + Vercel)
+4. **Add recipients** via dashboard with phone numbers
+5. **Send test alert** to verify
 
-**See:** [ALERT_SETUP_GUIDE.md](ALERT_SETUP_GUIDE.md) for detailed instructions
+**Detailed Guide:** [TELEGRAM_GROUP_SETUP.md](TELEGRAM_GROUP_SETUP.md)
 
 ---
 

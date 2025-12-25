@@ -16,6 +16,8 @@ class Settings(BaseSettings):
 
     # Telegram Bot Configuration
     TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_GROUP_CHAT_ID: str = ""  # Main group/channel for sending alerts
+    TELEGRAM_GROUP_INVITE_LINK: str = ""  # Invite link to join the alert group
 
     # Alert System Settings
     ALERT_COOLDOWN_MINUTES: int = 15
