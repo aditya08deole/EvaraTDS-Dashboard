@@ -11,6 +11,7 @@ You need to add these environment variables to your Vercel project:
 
 ### Add these variables:
 
+**Backend Environment Variables:**
 ```
 TELEGRAM_BOT_TOKEN=8507962260:AAHaRXknIvbEILzEgdK4rJ0rRcMNyV3q2NY
 TDS_ALERT_THRESHOLD=150.0
@@ -19,6 +20,15 @@ ALERT_COOLDOWN_MINUTES=15
 DATABASE_URL=sqlite:///./alerts.db
 THINGSPEAK_CHANNEL_ID=2713286
 THINGSPEAK_READ_KEY=EHEK3A1XD48TY98B
+```
+
+**Frontend Environment Variables (for Vite build):**
+```
+VITE_API_BASE_URL=https://evara-tds-dashboard.vercel.app/api/v1
+VITE_THINGSPEAK_CHANNEL_ID=2713286
+VITE_THINGSPEAK_READ_KEY=EHEK3A1XD48TY98B
+VITE_ADMIN_PASSWORD=Aditya@08
+VITE_VIEWER_PASSWORD=viewer123
 ```
 
 ### Important Notes:
