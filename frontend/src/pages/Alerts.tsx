@@ -53,7 +53,7 @@ export default function Alerts() {
     channels: ['telegram']
   });
 
-  const API_BASE = 'http://localhost:8000/api/v1/alerts';
+  const API_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'}/alerts`;
 
   useEffect(() => {
     fetchData();
