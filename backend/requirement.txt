@@ -9,3 +9,6 @@ mangum
 PyJWT[crypto]
 slowapi
 python-multipart
+sqlalchemy
+python-telegram-bot
+resend
