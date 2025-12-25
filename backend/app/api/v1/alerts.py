@@ -325,3 +325,60 @@ async def check_sensor_data(
             "alert_triggered": False,
             "message": "All values within normal range"
         }
+
+
+# ===================
+# Telegram Webhook
+# ===================
+@router.post("/webhook")
+async def telegram_webhook(update: dict, db: Session = Depends(get_db)):
+    """Receive Telegram update (webhook) and respond to /start.
+
+    This endpoint is intended to be set as the bot webhook URL via
+    https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook?url=<YOUR_WEBHOOK_URL>
+    """
+    try:
+        message = update.get("message") or update.get("edited_message")
+        if not message:
+            return {"ok": True, "reason": "no_message"}
+
+        chat = message.get("chat", {})
+        text = message.get("text", "")
+        from_user = message.get("from", {})
+        chat_id = str(chat.get("id"))
+
+        telegram = get_telegram_service()
+
+        # If user sent /start, send welcome and save recipient if not exists
+        if text and text.strip().lower().startswith("/start"):
+            name = from_user.get("first_name") or from_user.get("username") or "TelegramUser"
+
+            # Save recipient if not exists
+            existing = db.query(DBAlertRecipient).filter(DBAlertRecipient.telegram_chat_id == chat_id).first()
+            if not existing:
+                new_recipient = DBAlertRecipient(
+                    name=name,
+                    telegram_chat_id=chat_id,
+                    role="viewer",
+                    is_active=True,
+                    channels=["telegram"]
+                )
+                db.add(new_recipient)
+                db.commit()
+
+            # Send a friendly welcome message
+            welcome = (
+                f"👋 Hi {name}!\n\n"
+                "Thanks for registering for Evara TDS alerts.\n"
+                "You will receive notifications here when thresholds are exceeded.\n\n"
+                "If you have any issues, reply here or contact the admin."
+            )
+
+            # Use telegram service to send message (safe: token kept in env)
+            await telegram.send_alert(chat_id=chat_id, message=welcome)
+
+            return {"ok": True, "registered": True, "chat_id": chat_id}
+
+        return {"ok": True, "handled": False}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
