@@ -26,12 +26,12 @@ const GlassLayout: React.FC<LayoutProps> = ({ children }) => {
       <div className="relative flex h-full">
         <aside className="w-72 border-r border-[#1F2937] bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/80 to-[#0B0F1A]/70 backdrop-blur-xl hidden lg:flex flex-col py-5 px-6 z-10 shadow-2xl">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#38BDF8] to-[#0EA5E9] rounded-xl flex items-center justify-center shadow-[0_0_30px_rgba(56,189,248,0.5)] hover:shadow-[0_0_40px_rgba(56,189,248,0.7)] transition-all duration-300 animate-pulse-glow">
-              <Activity className="text-white w-8 h-8 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+            <div className="w-14 h-14 bg-gradient-to-br from-[#38BDF8] to-[#0EA5E9] rounded-xl flex items-center justify-center shadow-[0_0_30px_rgba(56,189,248,0.6),0_0_50px_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(56,189,248,0.8),0_0_60px_rgba(255,255,255,0.4)] transition-all duration-300 animate-pulse-glow">
+              <Activity className="text-white w-8 h-8 drop-shadow-[0_0_12px_rgba(255,255,255,1)]" />
             </div>
             <div>
-              <div className="font-extrabold text-3xl tracking-tight text-[#E5E7EB] leading-tight drop-shadow-[0_0_10px_rgba(56,189,248,0.6)]">EvaraTDS</div>
-              <div className="text-sm text-[#9CA3AF]">TDS Monitoring</div>
+              <div className="font-extrabold text-3xl tracking-tight text-[#E5E7EB] leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] filter brightness-110">EvaraTDS</div>
+              <div className="text-sm text-[#9CA3AF] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">TDS Monitoring</div>
             </div>
           </div>
 
