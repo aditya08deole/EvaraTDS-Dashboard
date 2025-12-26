@@ -6,10 +6,56 @@ html, body, #root {
 	height: 100%;
 }
 
-/* Responsive base font-size */
+/* Premium Glow Animations */
+@keyframes pulse-glow {
+	0%, 100% {
+		filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.5));
+	}
+	50% {
+		filter: drop-shadow(0 0 30px rgba(56, 189, 248, 0.8));
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -1000px 0;
+	}
+	100% {
+		background-position: 1000px 0;
+	}
+}
+
+.animate-pulse-glow {
+	animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+	animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+	background: linear-gradient(
+		90deg,
+		rgba(56, 189, 248, 0) 0%,
+		rgba(56, 189, 248, 0.2) 50%,
+		rgba(56, 189, 248, 0) 100%
+	);
+	background-size: 1000px 100%;
+	animation: shimmer 3s infinite;
+}
+
 /* Responsive base font-size */
 html { 
-	font-size: 12px; /* Reduced base size */
+	font-size: 12px;
 }
 
 @media (max-width: 1440px) {
@@ -21,11 +67,11 @@ body {
 	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 	background: linear-gradient(180deg, #0B0F1A 0%, #0E1627 50%, #111827 100%);
 	background-attachment: fixed;
-	color: #E5E7EB; /* primary text color for dark theme */
+	color: #E5E7EB;
 	position: relative;
 }
 
-/* Subtle grid pattern overlay for depth */
+/* Enhanced grid pattern with subtle glow */
 body::before {
 	content: '';
 	position: fixed;
@@ -34,8 +80,8 @@ body::before {
 	right: 0;
 	bottom: 0;
 	background-image: 
-		linear-gradient(rgba(56, 189, 248, 0.02) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(56, 189, 248, 0.02) 1px, transparent 1px);
+		linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
 	background-size: 50px 50px;
 	pointer-events: none;
 	z-index: 1;
@@ -43,11 +89,22 @@ body::before {
 
 .glass-card {
 	background: rgba(15, 23, 42, 0.60);
-	backdrop-filter: blur(12px);
-	border: 1px solid rgba(31, 41, 55, 0.6);
+	backdrop-filter: blur(16px);
+	border: 1px solid rgba(56, 189, 248, 0.1);
 	box-shadow: 
-		0 4px 24px rgba(0, 0, 0, 0.3),
-		inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+		0 4px 24px rgba(0, 0, 0, 0.4),
+		0 0 40px rgba(56, 189, 248, 0.1),
+		inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+	transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+	border-color: rgba(56, 189, 248, 0.3);
+	box-shadow: 
+		0 8px 32px rgba(0, 0, 0, 0.5),
+		0 0 60px rgba(56, 189, 248, 0.2),
+		inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
 }
 
 /* subtle neon glow for alerts */
