@@ -37,12 +37,22 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
       if (response.ok) {
         const data = await response.json();
         if (data.status === 'success') {
-          set({ 
-            settings: {
-              ...data.settings,
-              lastModified: new Date(data.settings.lastModified)
-            }
-          });
+          const newSettings = {
+            ...data.settings,
+            lastModified: new Date(data.settings.lastModified)
+          };
+          
+          // Only update if settings actually changed (prevents unnecessary re-renders)
+          const current = get().settings;
+          if (
+            current.tdsThreshold !== newSettings.tdsThreshold ||
+            current.tempThreshold !== newSettings.tempThreshold ||
+            current.alertEmail !== newSettings.alertEmail ||
+            current.refreshInterval !== newSettings.refreshInterval ||
+            current.lastModified.getTime() !== newSettings.lastModified.getTime()
+          ) {
+            set({ settings: newSettings });
+          }
           return;
         }
       }

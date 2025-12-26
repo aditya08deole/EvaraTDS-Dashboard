@@ -10,7 +10,7 @@ const Dashboard = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const { settings } = useSettingsStore();
+  const { settings, loadSettings } = useSettingsStore();
 
   const fetchData = async () => {
     const result = await getDashboardData();
@@ -23,9 +23,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(); // Initial load
-    const interval = setInterval(fetchData, 1000); // Ultra-fast 1-second updates
-    return () => clearInterval(interval);
-  }, []);
+    loadSettings(); // Load settings initially
+    const dataInterval = setInterval(fetchData, 1000); // Ultra-fast 1-second data updates
+    const settingsInterval = setInterval(loadSettings, 1000); // Ultra-fast 1-second settings sync
+    return () => {
+      clearInterval(dataInterval);
+      clearInterval(settingsInterval);
+    };
+  }, [loadSettings]);
 
   if (loading) {
     return (
@@ -60,8 +65,8 @@ const Dashboard = () => {
         </div>
         <div className="flex flex-col sm:items-end gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-end">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
-            <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]" />
+            <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]" />
           </div>
           <div className="flex flex-col items-center sm:items-end gap-1">
             <div className="flex items-center gap-1 sm:gap-2 text-[#9CA3AF] font-medium text-xs justify-center sm:justify-end">

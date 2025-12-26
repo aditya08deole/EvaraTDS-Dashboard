@@ -13,7 +13,10 @@ const Settings: React.FC = () => {
 
   // Load settings on mount
   useEffect(() => {
-    loadSettings();
+    const initSettings = async () => {
+      await loadSettings();
+    };
+    initSettings();
   }, [loadSettings]);
 
   // Update local state when settings change
