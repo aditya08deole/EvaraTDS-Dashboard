@@ -1,0 +1,8 @@
+{
+  "tdsThreshold": 150,
+  "tempThreshold": 35,
+  "alertEmail": "",
+  "refreshInterval": 3000,
+  "lastModified": "2025-12-27T00:00:00.000000",
+  "modifiedBy": "system"
+}

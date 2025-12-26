@@ -30,8 +30,8 @@ const GlassLayout: React.FC<LayoutProps> = ({ children }) => {
               <Activity className="text-white w-8 h-8 drop-shadow-[0_0_12px_rgba(255,255,255,1)]" />
             </div>
             <div>
-              <div className="font-extrabold text-3xl tracking-tight text-[#E5E7EB] leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] filter brightness-110">EvaraTDS</div>
-              <div className="text-sm text-[#9CA3AF] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">TDS Monitoring</div>
+              <div className="font-extrabold text-3xl tracking-tight text-[#E5E7EB] leading-tight drop-shadow-[0_0_4px_rgba(255,255,255,0.25)]">EvaraTDS</div>
+              <div className="text-sm text-[#9CA3AF]">TDS Monitoring</div>
             </div>
           </div>
 

@@ -13,7 +13,9 @@ router = APIRouter()
 
 # Settings file path
 SETTINGS_FILE = Path(__file__).parent.parent.parent.parent / "data" / "settings.json"
-SETTINGS_FILE.parent.mkdir(exist_ok=True)
+
+# Ensure directory exists
+SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 class SystemSettings(BaseModel):
     tdsThreshold: float = 150
@@ -32,14 +34,20 @@ def load_settings() -> SystemSettings:
             with open(SETTINGS_FILE, 'r') as f:
                 data = json.load(f)
                 return SystemSettings(**data)
+        else:
+            # Create default settings file if it doesn't exist
+            save_settings(DEFAULT_SETTINGS)
+            return DEFAULT_SETTINGS
     except Exception as e:
         print(f"Error loading settings: {e}")
-    
-    return DEFAULT_SETTINGS
+        return DEFAULT_SETTINGS
 
 def save_settings(settings: SystemSettings):
     """Save settings to JSON file"""
     try:
+        # Ensure directory exists
+        SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(SETTINGS_FILE, 'w') as f:
             json.dump(settings.dict(), f, indent=2)
     except Exception as e:

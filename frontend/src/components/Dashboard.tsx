@@ -60,8 +60,8 @@ const Dashboard = () => {
         </div>
         <div className="flex flex-col sm:items-end gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-end">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain" />
-            <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain" />
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
+            <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
           </div>
           <div className="flex flex-col items-center sm:items-end gap-1">
             <div className="flex items-center gap-1 sm:gap-2 text-[#9CA3AF] font-medium text-xs justify-center sm:justify-end">

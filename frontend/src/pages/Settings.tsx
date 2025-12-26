@@ -26,31 +26,40 @@ const Settings: React.FC = () => {
   // Admin-only check
   const isAdmin = user?.role === 'admin';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isAdmin) return;
     
     setSaveStatus('saving');
     
-    setTimeout(() => {
-      saveSettings({
+    try {
+      await saveSettings({
         tdsThreshold,
         tempThreshold,
         alertEmail
       }, user?.username || 'unknown');
       
       setSaveStatus('success');
-      
       setTimeout(() => setSaveStatus('idle'), 3000);
-    }, 500);
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (!isAdmin) return;
     
     if (confirm('Are you sure you want to reset all settings to defaults?')) {
-      resetToDefaults();
-      setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      try {
+        await resetToDefaults();
+        setSaveStatus('success');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      } catch (error) {
+        console.error('Failed to reset settings:', error);
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      }
     }
   };
 
@@ -77,12 +86,18 @@ const Settings: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl lg:text-4xl font-bold text-[#E5E7EB]">System Calibration</h2>
-          <p className="text-[#9CA3AF] mt-2">Configure thresholds and alert settings</p>
+          <p className="text-[#9CA3AF] mt-2">Configure thresholds and alert settings (Global - synced across all devices)</p>
         </div>
         {saveStatus === 'success' && (
           <div className="flex items-center gap-2 bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] px-4 py-2 rounded-lg">
             <CheckCircle2 className="w-5 h-5" />
-            <span className="font-semibold">Saved successfully!</span>
+            <span className="font-semibold">Saved globally!</span>
+          </div>
+        )}
+        {saveStatus === 'error' && (
+          <div className="flex items-center gap-2 bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444] px-4 py-2 rounded-lg">
+            <AlertCircle className="w-5 h-5" />
+            <span className="font-semibold">Failed to save</span>
           </div>
         )}
       </div>

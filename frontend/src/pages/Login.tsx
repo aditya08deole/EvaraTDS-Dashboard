@@ -60,8 +60,8 @@ const Login: React.FC = () => {
         {/* Logo & Title */}
         <div className="text-center mb-10">
           <div className="flex justify-center gap-8 mb-10">
-            <img src="/EvaraTech.png" alt="EvaraTech" className="h-32 w-auto object-contain" />
-            <img src="/IIITH.png" alt="IIITH" className="h-32 w-auto object-contain" />
+            <img src="/EvaraTech.png" alt="EvaraTech" className="h-32 w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
+            <img src="/IIITH.png" alt="IIITH" className="h-32 w-auto object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] filter brightness-105" />
           </div>
           <h1 className="text-7xl md:text-8xl font-black bg-gradient-to-r from-[#38BDF8] via-[#0EA5E9] to-[#38BDF8] bg-clip-text text-transparent mb-4 leading-tight">
             EvaraTDS
