@@ -105,7 +105,6 @@ body::before {
 		0 0 60px rgba(56, 189, 248, 0.2),
 		inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
-}
 
 /* subtle neon glow for alerts */
 .neon-alert {
