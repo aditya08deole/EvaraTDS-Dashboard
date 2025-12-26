@@ -2,13 +2,19 @@
 Vercel Cron Job - Automatic Alerts Every 15 Minutes
 This runs on Vercel's infrastructure, no laptop needed!
 """
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException
+from mangum import Mangum
 import os
+import sys
 from datetime import datetime
-from app.services.telegram_service import get_telegram_service
-from app.services.thingspeak import ThingSpeakService
 
-router = APIRouter()
+# Add backend to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+from backend.app.services.telegram_service import get_telegram_service
+from backend.app.services.thingspeak import ThingSpeakService
+
+app = FastAPI()
 
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "1362954575")
 TDS_THRESHOLD = float(os.getenv("TDS_ALERT_THRESHOLD", "150"))
@@ -121,7 +127,7 @@ async def cron_send_alert(request: Request):
         
         return {"status": "error", "message": str(e)}
 
-@router.get("/health")
+@app.get("/health")
 async def cron_health():
     """Health check for cron job"""
     try:
@@ -136,3 +142,6 @@ async def cron_health():
         }
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}
+
+# Mangum handler for Vercel
+handler = Mangum(app)
