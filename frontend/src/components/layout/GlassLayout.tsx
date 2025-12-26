@@ -38,7 +38,6 @@ const GlassLayout: React.FC<LayoutProps> = ({ children }) => {
           <nav className="space-y-2 flex-1">
             <NavItem to="/dashboard" icon={Activity} label="Live Monitor" />
             <NavItem to="/history" icon={Database} label="Data Logs" />
-            <NavItem to="/alerts" icon={Bell} label="Alerts" />
             <NavItem to="/settings" icon={SettingsIcon} label="Calibration" />
           </nav>
 

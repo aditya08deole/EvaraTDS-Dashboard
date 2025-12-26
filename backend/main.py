@@ -6,7 +6,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.core.config import Settings
 from app.api.v1.endpoints import router as api_router
-from app.api.v1.alerts_simple import router as alerts_router
+from app.api.v1.alerts_minimal import router as alerts_router
 
 settings = Settings()
 
@@ -23,7 +23,7 @@ app.add_middleware(
     allowed_hosts=["localhost", "127.0.0.1", "*.vercel.app", "evaratds.com", "*.evaratds.com"]
 )
 
-# CORS Setup (Clerk + Frontend)
+# CORS Setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -41,8 +41,6 @@ app.add_middleware(
 # Include routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(alerts_router, prefix="/api/v1/alerts")
-
-# No database initialization needed - using JSON storage
 
 @app.get("/health")
 async def health_check():
