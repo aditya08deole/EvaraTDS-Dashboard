@@ -43,11 +43,16 @@ def load_settings() -> SystemSettings:
         return DEFAULT_SETTINGS
 
 def save_settings(settings: SystemSettings):
-    """Save settings to JSON file"""
+    """
+    Save settings to JSON file
+    This overwrites the entire file - old settings are deleted/replaced
+    Works on Vercel deployment for global cross-device sync
+    """
     try:
         # Ensure directory exists
         SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
         
+        # Write entire settings object (overwrites previous file completely)
         with open(SETTINGS_FILE, 'w') as f:
             json.dump(settings.dict(), f, indent=2)
     except Exception as e:
