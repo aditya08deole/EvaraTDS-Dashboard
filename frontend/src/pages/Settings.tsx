@@ -10,8 +10,9 @@ const Settings: React.FC = () => {
   const [tempThreshold, setTempThreshold] = useState(settings.tempThreshold);
   const [alertEmail, setAlertEmail] = useState(settings.alertEmail);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Load settings on mount
+  // Load settings on mount only
   useEffect(() => {
     const initSettings = async () => {
       await loadSettings();
@@ -19,12 +20,14 @@ const Settings: React.FC = () => {
     initSettings();
   }, [loadSettings]);
 
-  // Update local state when settings change
+  // Update local state when settings change ONLY if not currently editing
   useEffect(() => {
-    setTdsThreshold(settings.tdsThreshold);
-    setTempThreshold(settings.tempThreshold);
-    setAlertEmail(settings.alertEmail);
-  }, [settings]);
+    if (!isEditing) {
+      setTdsThreshold(settings.tdsThreshold);
+      setTempThreshold(settings.tempThreshold);
+      setAlertEmail(settings.alertEmail);
+    }
+  }, [settings, isEditing]);
 
   // Admin-only check
   const isAdmin = user?.role === 'admin';
@@ -116,7 +119,11 @@ const Settings: React.FC = () => {
             <input 
               type="number" 
               value={tdsThreshold}
-              onChange={(e) => setTdsThreshold(Number(e.target.value))}
+              onChange={(e) => {
+                setTdsThreshold(Number(e.target.value));
+                setIsEditing(true);
+              }}
+              onBlur={() => setTimeout(() => setIsEditing(false), 500)}
               className="bg-[#161E2E] border-2 border-[#1F2937] text-[#E5E7EB] rounded-lg px-6 py-4 w-full focus:ring-2 focus:ring-[#38BDF8] outline-none font-bold text-xl" 
             />
             <span className="flex items-center text-[#9CA3AF] text-lg font-bold whitespace-nowrap">PPM</span>
@@ -136,7 +143,11 @@ const Settings: React.FC = () => {
             <input 
               type="number" 
               value={tempThreshold}
-              onChange={(e) => setTempThreshold(Number(e.target.value))}
+              onChange={(e) => {
+                setTempThreshold(Number(e.target.value));
+                setIsEditing(true);
+              }}
+              onBlur={() => setTimeout(() => setIsEditing(false), 500)}
               className="bg-[#161E2E] border-2 border-[#1F2937] text-[#E5E7EB] rounded-lg px-6 py-4 w-full focus:ring-2 focus:ring-[#F59E0B] outline-none font-bold text-xl" 
             />
             <span className="flex items-center text-[#9CA3AF] text-lg font-bold whitespace-nowrap">°C</span>
@@ -152,7 +163,11 @@ const Settings: React.FC = () => {
           <input 
             type="email" 
             value={alertEmail}
-            onChange={(e) => setAlertEmail(e.target.value)}
+            onChange={(e) => {
+              setAlertEmail(e.target.value);
+              setIsEditing(true);
+            }}
+            onBlur={() => setTimeout(() => setIsEditing(false), 500)}
             placeholder="admin@evaratds.com"
             className="bg-[#161E2E] border-2 border-[#1F2937] text-[#E5E7EB] rounded-lg px-6 py-4 w-full focus:ring-2 focus:ring-[#38BDF8] outline-none font-medium text-lg" 
           />
