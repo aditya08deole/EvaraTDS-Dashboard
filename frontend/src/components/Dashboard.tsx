@@ -203,15 +203,19 @@ const Dashboard = () => {
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
+                    dot={{ fill: '#ffffff', stroke: '#38BDF8', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, fill: '#38BDF8', stroke: '#ffffff', strokeWidth: 2 }}
                   />
+                  {/* Red Threshold Line - Calibration Limit */}
                   <Line 
                     type="monotone" 
                     dataKey={() => settings.tdsThreshold} 
                     stroke="#ef4444" 
                     strokeDasharray="8 8" 
-                    strokeWidth={2.5} 
+                    strokeWidth={3} 
                     dot={false} 
                     isAnimationActive={false}
+                    name="Threshold Limit"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -293,6 +297,19 @@ const Dashboard = () => {
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
+                    dot={{ fill: '#ffffff', stroke: '#A855F7', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, fill: '#A855F7', stroke: '#ffffff', strokeWidth: 2 }}
+                  />
+                  {/* Temperature Threshold Line */}
+                  <Line 
+                    type="monotone" 
+                    dataKey={() => settings.tempThreshold} 
+                    stroke="#f59e0b" 
+                    strokeDasharray="8 8" 
+                    strokeWidth={3} 
+                    dot={false} 
+                    isAnimationActive={false}
+                    name="Temp Limit"
                   />
                 </AreaChart>
               </ResponsiveContainer>
