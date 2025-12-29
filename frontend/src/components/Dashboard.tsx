@@ -47,12 +47,15 @@ const Dashboard = () => {
   const isCritical = latest.tds > settings.tdsThreshold; // Use settings threshold
   const isSafe = latest.tds <= settings.tdsThreshold;
 
-  // Format history for charts
-  const chartData = data?.history.map((item: any) => ({
-    time: format(new Date(item.created_at), 'HH:mm'),
-    tds: item.tds,
-    temp: item.temp
-  })) || [];
+  // Format history for charts - Filter out invalid data (TDS <= 20 ppm)
+  // This removes false readings, sensor errors, and zero values from visualization
+  const chartData = data?.history
+    .filter((item: any) => item.tds > 20) // Professional filtering: exclude unreliable low readings
+    .map((item: any) => ({
+      time: format(new Date(item.created_at), 'HH:mm'),
+      tds: item.tds,
+      temp: item.temp
+    })) || [];
 
   return (
     <div className="p-2 sm:p-4 lg:p-6 w-full min-h-screen flex flex-col space-y-2 sm:space-y-4 overflow-hidden bg-gradient-to-br from-[#0B0F1A]/50 via-transparent to-[#161E2E]/30">
