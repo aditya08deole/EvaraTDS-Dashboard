@@ -11,7 +11,9 @@ from datetime import datetime
 from typing import List, Optional, Dict
 import json
 
-DB_PATH = "backend/data/evara_alerts.db"
+# Get absolute path relative to this file (works locally and on Vercel)
+_DB_DIR = Path(__file__).parent.parent.parent / "data"
+DB_PATH = str(_DB_DIR / "evara_alerts.db")
 
 def init_database():
     """Initialize database with schema (idempotent)"""
@@ -173,4 +175,5 @@ class AlertLogDB:
             return cursor.rowcount
 
 # Initialize database on module import
+init_database()
 init_database()
