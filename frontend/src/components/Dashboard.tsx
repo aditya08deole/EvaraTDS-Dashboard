@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Activity, Droplets, Thermometer, Zap, AlertTriangle, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSettingsStore } from '../store/useSettingsStore';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -21,14 +22,28 @@ const Dashboard = () => {
     setLoading(false);
   };
 
+  // Check for alerts and trigger emails if needed
+  const checkAlerts = async () => {
+    try {
+      await axios.post('/api/v1/check-alerts');
+    } catch (error) {
+      console.error('Alert check failed:', error);
+    }
+  };
+
   useEffect(() => {
     fetchData(); // Initial load
     loadSettings(); // Load settings initially
+    checkAlerts(); // Initial alert check
+    
     const dataInterval = setInterval(fetchData, 1000); // Ultra-fast 1-second data updates
     const settingsInterval = setInterval(loadSettings, 1000); // Ultra-fast 1-second settings sync
+    const alertInterval = setInterval(checkAlerts, 60000); // Check alerts every 60 seconds
+    
     return () => {
       clearInterval(dataInterval);
       clearInterval(settingsInterval);
+      clearInterval(alertInterval);
     };
   }, [loadSettings]);
 

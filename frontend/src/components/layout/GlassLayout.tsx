@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Activity, Settings as SettingsIcon, Database, LogOut, User, Bell } from 'lucide-react';
+import { Activity, Settings as SettingsIcon, Database, LogOut, User, Bell, Mail } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 
@@ -38,6 +38,7 @@ const GlassLayout: React.FC<LayoutProps> = ({ children }) => {
           <nav className="space-y-2 flex-1">
             <NavItem to="/dashboard" icon={Activity} label="Live Monitor" />
             <NavItem to="/history" icon={Database} label="Data Logs" />
+            <NavItem to="/recipients" icon={Mail} label="Email Alerts" />
             <NavItem to="/settings" icon={SettingsIcon} label="Calibration" />
           </nav>
 

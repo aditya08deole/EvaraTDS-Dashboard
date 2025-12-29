@@ -4,6 +4,7 @@ import GlassLayout from './components/layout/GlassLayout';
 import Dashboard from './components/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
+import Recipients from './pages/Recipients';
 import Login from './pages/Login';
 import { useRefresh } from './hooks/useRefresh';
 import { useAuthStore } from './store/useAuthStore';
@@ -45,6 +46,11 @@ function App() {
         <Route path="/settings" element={
           <ProtectedRoute>
             <GlassLayout><Settings /></GlassLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/recipients" element={
+          <ProtectedRoute>
+            <GlassLayout><Recipients /></GlassLayout>
           </ProtectedRoute>
         } />
       </Routes>
