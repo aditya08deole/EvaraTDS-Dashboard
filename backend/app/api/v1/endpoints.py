@@ -5,8 +5,12 @@ from app.core.config import settings
 from .recipients import router as recipients_router
 from .settings import router as settings_router
 from app.services.email_service import EmailAlertService
+from app.database.db import RecipientDB, AlertLogDB
 import json
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -15,7 +19,6 @@ router.include_router(recipients_router, prefix="", tags=["recipients"])
 router.include_router(settings_router, prefix="", tags=["settings"])
 
 SETTINGS_FILE = "backend/data/settings.json"
-RECIPIENTS_FILE = "backend/data/recipients.json"
 
 def load_settings_file():
     """Load current settings"""
@@ -26,16 +29,6 @@ def load_settings_file():
     except Exception:
         pass
     return {"tdsThreshold": 150, "tempThreshold": 35}
-
-def load_recipients_file():
-    """Load recipients"""
-    try:
-        if os.path.exists(RECIPIENTS_FILE):
-            with open(RECIPIENTS_FILE, 'r') as f:
-                return json.load(f)
-    except Exception:
-        pass
-    return []
 
 @router.get("/dashboard", response_model=DashboardData)
 async def get_dashboard_metrics():
@@ -73,21 +66,23 @@ async def get_dashboard_metrics():
 @router.post("/check-alerts")
 async def check_and_send_alerts():
     """
-    Check current sensor values against thresholds and send emails if needed
-    This endpoint is called periodically from the frontend
+    Professional alert checker with database-backed recipients
+    Called periodically from frontend
     """
     try:
-        # Fetch latest data
+        # Fetch latest sensor data
         data = await fetch_evara_data(results=1)
         if not data or not data.get("latest"):
-            return {"message": "No data available"}
+            return {"message": "No data available", "status": "no_data"}
         
         latest = data["latest"]
         settings_data = load_settings_file()
-        recipients = load_recipients_file()
+        
+        # Get recipients from database
+        recipients = RecipientDB.get_all(active_only=True)
         
         if not recipients:
-            return {"message": "No recipients configured"}
+            return {"message": "No active recipients configured", "status": "no_recipients"}
         
         tds = latest.get("tds", 0)
         temp = latest.get("temp", 0)
@@ -109,21 +104,30 @@ async def check_and_send_alerts():
                 alerts_sent.append(f"Temperature alert sent ({temp:.1f} > {temp_threshold})")
         
         if alerts_sent:
-            return {"message": "Alerts sent", "alerts": alerts_sent}
+            logger.info(f"Alerts sent: {alerts_sent}")
+            return {"message": "Alerts sent", "alerts": alerts_sent, "status": "sent"}
         else:
-            return {"message": "No alerts needed", "tds": tds, "temp": temp}
+            return {
+                "message": "No alerts needed", 
+                "tds": tds, 
+                "temp": temp,
+                "status": "normal"
+            }
     
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error in check_alerts: {e}")
+        return {"error": str(e), "status": "error"}
 
 @router.get("/alert-history")
-async def get_alert_history():
-    """Get recent alert history"""
+async def get_alert_history(limit: int = 10):
+    """Get recent alert history from database"""
     try:
-        log_data = EmailAlertService.load_alert_log()
+        logs = AlertLogDB.get_recent(limit=limit)
+        logger.info(f"Retrieved {len(logs)} alert logs")
         return {
-            "tds_alerts": log_data.get("tds_alerts", [])[-10:],  # Last 10 TDS alerts
-            "temp_alerts": log_data.get("temp_alerts", [])[-10:]  # Last 10 temp alerts
+            "logs": logs,
+            "count": len(logs)
         }
     except Exception as e:
+        logger.error(f"Error fetching alert history: {e}")
         return {"error": str(e)}

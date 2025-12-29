@@ -1,259 +1,263 @@
 """
-Email Alert Service using Brevo (formerly SendinBlue)
-Sends automated email alerts when TDS/Temperature thresholds are exceeded
+Professional Email Alert Service
+Supports: IFTTT Webhooks (primary), SMTP (fallback)
+Uses SQLite database for recipients and alert logging
 """
 
 import os
-import json
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Tuple
 import aiohttp
 import aiosmtplib
 from email.message import EmailMessage
-from pathlib import Path
+import logging
 
-ALERT_LOG_FILE = "backend/data/alert_log.json"
-BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
-BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+# Import database layer
+try:
+    from app.database.db import AlertLogDB
+except ImportError:
+    from database.db import AlertLogDB
 
-# Generic SMTP fallback (works with Sender SMTP credentials)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# IFTTT Webhook configuration (primary method)
+IFTTT_WEBHOOK_KEY = os.getenv("IFTTT_WEBHOOK_KEY", "")
+IFTTT_EVENT_TDS = os.getenv("IFTTT_EVENT_TDS", "evara_tds_alert")
+IFTTT_EVENT_TEMP = os.getenv("IFTTT_EVENT_TEMP", "evara_temp_alert")
+
+# SMTP configuration (fallback method)
 SMTP_HOST = os.getenv("SMTP_HOST", "")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASS = os.getenv("SMTP_PASS", "")
 SMTP_FROM = os.getenv("SMTP_FROM", "alerts@evaratds.com")
 
-# Throttle settings: Don't send more than 1 email per 15 minutes for same alert type
-THROTTLE_MINUTES = 15
+# Throttle settings
+THROTTLE_MINUTES = int(os.getenv("ALERT_THROTTLE_MINUTES", "15"))
+
 
 class EmailAlertService:
-    """Handle email alerts with throttling to prevent spam"""
-    
-    @staticmethod
-    def ensure_alert_log():
-        """Ensure alert log file exists"""
-        Path(ALERT_LOG_FILE).parent.mkdir(parents=True, exist_ok=True)
-        if not os.path.exists(ALERT_LOG_FILE):
-            with open(ALERT_LOG_FILE, 'w') as f:
-                json.dump({"tds_alerts": [], "temp_alerts": []}, f)
-    
-    @staticmethod
-    def load_alert_log():
-        """Load alert log from file"""
-        EmailAlertService.ensure_alert_log()
-        try:
-            with open(ALERT_LOG_FILE, 'r') as f:
-                return json.load(f)
-        except Exception:
-            return {"tds_alerts": [], "temp_alerts": []}
-    
-    @staticmethod
-    def save_alert_log(log_data):
-        """Save alert log to file"""
-        EmailAlertService.ensure_alert_log()
-        with open(ALERT_LOG_FILE, 'w') as f:
-            json.dump(log_data, f, indent=2)
+    """Professional email alert service with IFTTT and SMTP support"""
     
     @staticmethod
     def should_send_alert(alert_type: str) -> bool:
-        """Check if enough time has passed since last alert"""
-        log_data = EmailAlertService.load_alert_log()
-        alerts = log_data.get(f"{alert_type}_alerts", [])
-        
-        if not alerts:
-            return True
-        
-        last_alert_str = alerts[-1].get("sent_at")
-        if not last_alert_str:
-            return True
-        
-        last_alert = datetime.fromisoformat(last_alert_str)
-        time_diff = datetime.utcnow() - last_alert
-        
-        return time_diff >= timedelta(minutes=THROTTLE_MINUTES)
+        """Check if enough time has passed since last alert (database-backed)"""
+        try:
+            last_alert = AlertLogDB.get_last_alert(alert_type)
+            
+            if not last_alert:
+                return True
+            
+            last_sent = datetime.fromisoformat(last_alert['sent_at'])
+            time_diff = datetime.utcnow() - last_sent
+            
+            should_send = time_diff >= timedelta(minutes=THROTTLE_MINUTES)
+            if not should_send:
+                logger.info(f"⏰ {alert_type.upper()} alert throttled - last sent {int(time_diff.total_seconds()/60)} minutes ago")
+            return should_send
+        except Exception as e:
+            logger.error(f"Error checking throttle: {e}")
+            return True  # Fail open - allow alert on error
     
     @staticmethod
-    def log_alert(alert_type: str, recipients: List[str], value: float, threshold: float):
-        """Log that an alert was sent"""
-        log_data = EmailAlertService.load_alert_log()
-        
-        alert_entry = {
-            "sent_at": datetime.utcnow().isoformat(),
-            "recipients": recipients,
-            "value": value,
-            "threshold": threshold
-        }
-        
-        log_data[f"{alert_type}_alerts"].append(alert_entry)
-        
-        # Keep only last 50 alerts per type
-        log_data[f"{alert_type}_alerts"] = log_data[f"{alert_type}_alerts"][-50:]
-        
-        EmailAlertService.save_alert_log(log_data)
-    
-    @staticmethod
-    async def send_tds_alert(recipients: List[dict], tds_value: float, threshold: float):
-        """Send TDS threshold exceeded alert"""
-        if not BREVO_API_KEY:
-            print("⚠️  BREVO_API_KEY not set - skipping email")
+    async def send_tds_alert(recipients: List[dict], tds_value: float, threshold: float) -> bool:
+        """Send TDS threshold exceeded alert via IFTTT or SMTP"""
+        if not recipients:
+            logger.warning("No recipients configured")
             return False
         
         if not EmailAlertService.should_send_alert("tds"):
-            print(f"⏰ TDS alert throttled - last sent within {THROTTLE_MINUTES} minutes")
             return False
         
         subject = f"🚨 CRITICAL: High TDS Detected - {tds_value:.1f} PPM"
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }}
-                .container {{ background-color: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center; }}
-                .alert-box {{ background-color: #fee; border-left: 4px solid #f00; padding: 15px; margin: 20px 0; }}
-                .metric {{ font-size: 32px; font-weight: bold; color: #f00; }}
-                .footer {{ text-align: center; color: #888; font-size: 12px; margin-top: 20px; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🚨 Water Quality Alert</h1>
-                </div>
-                <div class="alert-box">
-                    <h2>High TDS Level Detected</h2>
-                    <p>The Total Dissolved Solids (TDS) level has exceeded the configured threshold.</p>
-                    <p><strong>Current TDS:</strong> <span class="metric">{tds_value:.1f} PPM</span></p>
-                    <p><strong>Threshold:</strong> {threshold:.1f} PPM</p>
-                    <p><strong>Time:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
-                </div>
-                <p>⚠️ <strong>Action Required:</strong> Please check the water quality monitoring system and take necessary corrective actions.</p>
-                <div class="footer">
-                    <p>This is an automated alert from EvaraTDS Monitoring System</p>
-                    <p>© 2025 EvaraTech & IIIT Hyderabad</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        """
+        html_content = EmailAlertService._generate_tds_email(tds_value, threshold)
         
-        success = await EmailAlertService._send_email(recipients, subject, html_content)
+        # Try IFTTT first, then SMTP fallback
+        method, success = await EmailAlertService._send_via_ifttt(
+            IFTTT_EVENT_TDS, tds_value, threshold, "TDS", "PPM", recipients
+        )
         
-        if success:
-            recipient_emails = [r['email'] for r in recipients]
-            EmailAlertService.log_alert("tds", recipient_emails, tds_value, threshold)
+        if not success and (SMTP_HOST and SMTP_USER and SMTP_PASS):
+            method, success = await EmailAlertService._send_via_smtp(recipients, subject, html_content)
+        
+        # Log to database
+        recipient_emails = [r['email'] for r in recipients]
+        status = "success" if success else "failed"
+        AlertLogDB.add("tds", tds_value, threshold, recipient_emails, method, status)
         
         return success
     
     @staticmethod
-    async def send_temp_alert(recipients: List[dict], temp_value: float, threshold: float):
-        """Send Temperature threshold exceeded alert"""
-        if not BREVO_API_KEY:
-            print("⚠️  BREVO_API_KEY not set - skipping email")
+    async def send_temp_alert(recipients: List[dict], temp_value: float, threshold: float) -> bool:
+        """Send Temperature threshold exceeded alert via IFTTT or SMTP"""
+        if not recipients:
+            logger.warning("No recipients configured")
             return False
         
         if not EmailAlertService.should_send_alert("temp"):
-            print(f"⏰ Temperature alert throttled - last sent within {THROTTLE_MINUTES} minutes")
             return False
         
         subject = f"🌡️ WARNING: High Temperature Detected - {temp_value:.1f}°C"
-        html_content = f"""
+        html_content = EmailAlertService._generate_temp_email(temp_value, threshold)
+        
+        # Try IFTTT first, then SMTP fallback
+        method, success = await EmailAlertService._send_via_ifttt(
+            IFTTT_EVENT_TEMP, temp_value, threshold, "Temperature", "°C", recipients
+        )
+        
+        if not success and (SMTP_HOST and SMTP_USER and SMTP_PASS):
+            method, success = await EmailAlertService._send_via_smtp(recipients, subject, html_content)
+        
+        # Log to database
+        recipient_emails = [r['email'] for r in recipients]
+        status = "success" if success else "failed"
+        AlertLogDB.add("temp", temp_value, threshold, recipient_emails, method, status)
+        
+        return success
+    
+    @staticmethod
+    async def _send_via_ifttt(event_name: str, value: float, threshold: float, 
+                             metric_name: str, unit: str, recipients: List[dict]) -> Tuple[str, bool]:
+        """Send alert via IFTTT Webhooks"""
+        if not IFTTT_WEBHOOK_KEY:
+            return ("ifttt", False)
+        
+        url = f"https://maker.ifttt.com/trigger/{event_name}/with/key/{IFTTT_WEBHOOK_KEY}"
+        
+        # IFTTT webhook payload (value1, value2, value3)
+        payload = {
+            "value1": f"{metric_name}: {value:.1f} {unit}",
+            "value2": f"Threshold: {threshold:.1f} {unit}",
+            "value3": ", ".join([r['email'] for r in recipients])
+        }
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as response:
+                    if response.status == 200:
+                        logger.info(f"✅ Alert sent via IFTTT to {len(recipients)} recipients")
+                        return ("ifttt", True)
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"❌ IFTTT send failed: {response.status} - {error_text}")
+                        return ("ifttt", False)
+        except Exception as e:
+            logger.error(f"❌ IFTTT send error: {str(e)}")
+            return ("ifttt", False)
+    
+    @staticmethod
+    async def _send_via_smtp(recipients: List[dict], subject: str, html_content: str) -> Tuple[str, bool]:
+        """Send email via SMTP"""
+        try:
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = SMTP_FROM
+            msg['To'] = ', '.join([r['email'] for r in recipients])
+            msg.set_content('This email requires an HTML-capable client.')
+            msg.add_alternative(html_content, subtype='html')
+
+            await aiosmtplib.send(
+                msg,
+                hostname=SMTP_HOST,
+                port=SMTP_PORT,
+                username=SMTP_USER,
+                password=SMTP_PASS,
+                start_tls=(SMTP_PORT == 587)
+            )
+            logger.info(f"✅ Email sent via SMTP to {len(recipients)} recipients")
+            return ("smtp", True)
+        except Exception as e:
+            logger.error(f"❌ SMTP send error: {str(e)}")
+            return ("smtp", False)
+    
+    @staticmethod
+    def _generate_tds_email(tds_value: float, threshold: float) -> str:
+        """Generate professional HTML email for TDS alert"""
+        return f"""
         <!DOCTYPE html>
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }}
-                .container {{ background-color: white; border-radius: 10px; padding: 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center; }}
-                .alert-box {{ background-color: #fff3cd; border-left: 4px solid #ffa500; padding: 15px; margin: 20px 0; }}
-                .metric {{ font-size: 32px; font-weight: bold; color: #ffa500; }}
-                .footer {{ text-align: center; color: #888; font-size: 12px; margin-top: 20px; }}
+                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0; }}
+                .container {{ background-color: white; border-radius: 12px; padding: 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }}
+                .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 12px 12px 0 0; text-align: center; margin: -30px -30px 20px -30px; }}
+                .alert-box {{ background-color: #fee; border-left: 5px solid #f00; padding: 20px; margin: 20px 0; border-radius: 4px; }}
+                .metric {{ font-size: 36px; font-weight: bold; color: #f00; margin: 10px 0; }}
+                .footer {{ text-align: center; color: #888; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }}
+                .info {{ background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin: 15px 0; }}
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🌡️ Temperature Alert</h1>
+                    <h1 style="margin: 0;">🚨 Water Quality Alert</h1>
+                    <p style="margin: 8px 0 0 0; opacity: 0.9;">EvaraTDS Monitoring System</p>
                 </div>
                 <div class="alert-box">
-                    <h2>High Temperature Detected</h2>
-                    <p>The water temperature has exceeded the configured threshold.</p>
-                    <p><strong>Current Temperature:</strong> <span class="metric">{temp_value:.1f}°C</span></p>
-                    <p><strong>Threshold:</strong> {threshold:.1f}°C</p>
-                    <p><strong>Time:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+                    <h2 style="margin: 0 0 15px 0; color: #d32f2f;">High TDS Level Detected</h2>
+                    <p style="margin: 10px 0;">The Total Dissolved Solids (TDS) level has exceeded the configured threshold.</p>
+                    <div class="metric">{tds_value:.1f} PPM</div>
+                    <div class="info">
+                        <p style="margin: 5px 0;"><strong>Threshold:</strong> {threshold:.1f} PPM</p>
+                        <p style="margin: 5px 0;"><strong>Timestamp:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+                        <p style="margin: 5px 0;"><strong>Severity:</strong> Critical</p>
+                    </div>
                 </div>
-                <p>⚠️ <strong>Action Required:</strong> Please check the water temperature monitoring system and take necessary corrective actions.</p>
+                <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 4px;">
+                    <p style="margin: 0;"><strong>⚠️ Action Required:</strong> Please check the water quality monitoring system immediately and take necessary corrective actions.</p>
+                </div>
                 <div class="footer">
-                    <p>This is an automated alert from EvaraTDS Monitoring System</p>
-                    <p>© 2025 EvaraTech & IIIT Hyderabad</p>
+                    <p style="margin: 5px 0;">This is an automated alert from EvaraTDS Monitoring System</p>
+                    <p style="margin: 5px 0;">© 2025 EvaraTech & IIIT Hyderabad</p>
                 </div>
             </div>
         </body>
         </html>
         """
-        
-        success = await EmailAlertService._send_email(recipients, subject, html_content)
-        
-        if success:
-            recipient_emails = [r['email'] for r in recipients]
-            EmailAlertService.log_alert("temp", recipient_emails, temp_value, threshold)
-        
-        return success
     
     @staticmethod
-    async def _send_email(recipients: List[dict], subject: str, html_content: str):
-        """Send email: prefer Brevo API, fallback to SMTP if configured"""
-
-        # Try Brevo API if key present
-        if BREVO_API_KEY:
-            try:
-                # Prepare recipient list for Brevo
-                to_list = [{"email": r['email'], "name": r['name']} for r in recipients]
-                payload = {
-                    "sender": {"name": "EvaraTDS Monitor", "email": SMTP_FROM},
-                    "to": to_list,
-                    "subject": subject,
-                    "htmlContent": html_content
-                }
-                headers = {
-                    "accept": "application/json",
-                    "api-key": BREVO_API_KEY,
-                    "content-type": "application/json"
-                }
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(BREVO_API_URL, json=payload, headers=headers) as response:
-                        if response.status in [200, 201]:
-                            print(f"✅ Email sent successfully via Brevo to {len(to_list)} recipients")
-                            return True
-                        else:
-                            error_text = await response.text()
-                            print(f"❌ Brevo send failed: {response.status} - {error_text}")
-            except Exception as e:
-                print(f"❌ Brevo send error: {str(e)}")
-
-        # Fallback to SMTP if configured
-        if SMTP_HOST and SMTP_USER and SMTP_PASS:
-            try:
-                msg = EmailMessage()
-                msg['Subject'] = subject
-                msg['From'] = SMTP_FROM
-                msg['To'] = ', '.join([r['email'] for r in recipients])
-                msg.set_content('This email requires an HTML-capable client.')
-                msg.add_alternative(html_content, subtype='html')
-
-                await aiosmtplib.send(
-                    msg,
-                    hostname=SMTP_HOST,
-                    port=SMTP_PORT,
-                    username=SMTP_USER,
-                    password=SMTP_PASS,
-                    start_tls=(SMTP_PORT == 587)
-                )
-                print(f"✅ Email sent successfully via SMTP to {len(recipients)} recipients")
-                return True
-            except Exception as e:
-                print(f"❌ SMTP send error: {str(e)}")
-
-        print("⚠️ No email provider configured (BREVO_API_KEY or SMTP settings required)")
-        return False
+    def _generate_temp_email(temp_value: float, threshold: float) -> str:
+        """Generate professional HTML email for Temperature alert"""
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0; }}
+                .container {{ background-color: white; border-radius: 12px; padding: 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }}
+                .header {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 24px; border-radius: 12px 12px 0 0; text-align: center; margin: -30px -30px 20px -30px; }}
+                .alert-box {{ background-color: #fff3cd; border-left: 5px solid #ffa500; padding: 20px; margin: 20px 0; border-radius: 4px; }}
+                .metric {{ font-size: 36px; font-weight: bold; color: #ffa500; margin: 10px 0; }}
+                .footer {{ text-align: center; color: #888; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }}
+                .info {{ background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin: 15px 0; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 style="margin: 0;">🌡️ Temperature Alert</h1>
+                    <p style="margin: 8px 0 0 0; opacity: 0.9;">EvaraTDS Monitoring System</p>
+                </div>
+                <div class="alert-box">
+                    <h2 style="margin: 0 0 15px 0; color: #f57c00;">High Temperature Detected</h2>
+                    <p style="margin: 10px 0;">The water temperature has exceeded the configured threshold.</p>
+                    <div class="metric">{temp_value:.1f}°C</div>
+                    <div class="info">
+                        <p style="margin: 5px 0;"><strong>Threshold:</strong> {threshold:.1f}°C</p>
+                        <p style="margin: 5px 0;"><strong>Timestamp:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+                        <p style="margin: 5px 0;"><strong>Severity:</strong> Warning</p>
+                    </div>
+                </div>
+                <div style="background-color: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; border-radius: 4px;">
+                    <p style="margin: 0;"><strong>ℹ️ Action Required:</strong> Please check the water temperature monitoring system and take necessary corrective actions.</p>
+                </div>
+                <div class="footer">
+                    <p style="margin: 5px 0;">This is an automated alert from EvaraTDS Monitoring System</p>
+                    <p style="margin: 5px 0;">© 2025 EvaraTech & IIIT Hyderabad</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
