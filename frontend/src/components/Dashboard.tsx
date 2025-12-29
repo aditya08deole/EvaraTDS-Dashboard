@@ -54,7 +54,9 @@ const Dashboard = () => {
     .map((item: any) => ({
       time: format(new Date(item.created_at), 'HH:mm'),
       tds: item.tds,
-      temp: item.temp
+      temp: item.temp,
+      tdsThreshold: settings.tdsThreshold, // Add threshold value to each data point
+      tempThreshold: settings.tempThreshold // Add temp threshold to each data point
     })) || [];
 
   return (
@@ -207,7 +209,7 @@ const Dashboard = () => {
                   {/* Threshold Limit Line - Highly Visible */}
                   <Line 
                     type="monotone" 
-                    dataKey={() => settings.tdsThreshold} 
+                    dataKey="tdsThreshold"
                     stroke="#FF0000" 
                     strokeDasharray="10 5" 
                     strokeWidth={4} 
@@ -296,6 +298,15 @@ const Dashboard = () => {
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
+                  />
+                  <Line 
+                    dataKey="tempThreshold"
+                    stroke="#FF0000"
+                    strokeWidth={4}
+                    strokeDasharray="10 5"
+                    dot={false}
+                    name="Temperature Threshold"
+                    type="monotone"
                   />
                 </AreaChart>
               </ResponsiveContainer>
