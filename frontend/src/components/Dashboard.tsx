@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { getDashboardData } from '../api';
 import StatCard from './StatCard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-import { Activity, Droplets, Thermometer, Zap, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Activity, Droplets, Thermometer, Zap, AlertTriangle, RefreshCw, Sun, Moon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useThemeStore } from '../store/useThemeStore';
 import axios from 'axios';
 
 const Dashboard = () => {
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const { settings, loadSettings } = useSettingsStore();
+  const { theme, toggleTheme } = useThemeStore();
 
   const fetchData = async () => {
     const result = await getDashboardData();
@@ -75,13 +77,34 @@ const Dashboard = () => {
     })) || [];
 
   return (
-    <div className="p-3 sm:p-4 lg:p-6 w-full min-h-screen flex flex-col space-y-3 sm:space-y-4 overflow-x-hidden bg-gradient-to-br from-[#0B0F1A]/50 via-transparent to-[#161E2E]/30">
+    <div className={`p-3 sm:p-4 lg:p-6 w-full min-h-screen flex flex-col space-y-3 sm:space-y-4 overflow-x-hidden transition-colors duration-300 ${
+      theme === 'dark' 
+        ? 'bg-gradient-to-br from-[#0B0F1A]/50 via-transparent to-[#161E2E]/30' 
+        : 'bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20'
+    }`}>
+      
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className={`fixed top-4 right-4 z-50 p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
+          theme === 'dark'
+            ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white hover:shadow-purple-500/50'
+            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white hover:shadow-amber-500/50'
+        }`}
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? (
+          <Sun className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
+        ) : (
+          <Moon className="w-5 h-5 sm:w-6 sm:h-6" />
+        )}
+      </button>
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] bg-clip-text text-transparent mb-1 sm:mb-2 leading-tight text-center sm:text-left">EvaraTDS Dashboard</h1>
-          <p className="text-[#E5E7EB] text-xs sm:text-sm lg:text-base font-semibold text-center sm:text-left">System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
+          <p className={`text-xs sm:text-sm lg:text-base font-semibold text-center sm:text-left ${theme === 'dark' ? 'text-[#E5E7EB]' : 'text-gray-700'}`}>System ID: {data?.channel_info?.name || 'ESP32-NODE-01'}</p>
         </div>
         <div className="flex flex-col sm:items-end gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-end">
@@ -89,11 +112,11 @@ const Dashboard = () => {
             <img src="/IIITH.png" alt="IIITH" className="h-[44px] sm:h-[52px] lg:h-[64px] w-auto object-contain" />
           </div>
           <div className="flex flex-col items-center sm:items-end gap-1">
-            <div className="flex items-center gap-1 sm:gap-2 text-[#9CA3AF] font-medium text-xs justify-center sm:justify-end">
+            <div className={`flex items-center gap-1 sm:gap-2 font-medium text-xs justify-center sm:justify-end ${theme === 'dark' ? 'text-[#9CA3AF]' : 'text-gray-600'}`}>
               <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin-slow text-[#38BDF8]" />
               <span>Updated: {format(lastUpdated, 'HH:mm:ss')}</span>
             </div>
-            <div className="text-[#6B7280] text-xs font-medium text-center sm:text-right">
+            <div className={`text-xs font-medium text-center sm:text-right ${theme === 'dark' ? 'text-[#6B7280]' : 'text-gray-500'}`}>
               <span>Firmware: v2.1.3 | Status: Online</span>
             </div>
           </div>
@@ -146,9 +169,13 @@ const Dashboard = () => {
         <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#38BDF8]/30 to-transparent"></div>
 
         {/* Left: TDS Chart */}
-        <div className="glass-card p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[380px] sm:min-h-[420px]">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#38BDF8]/5 rounded-full blur-3xl"></div>
-          <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
+        <div className={`p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[380px] sm:min-h-[420px] transition-colors duration-300 ${
+          theme === 'dark' ? 'glass-card' : 'bg-white shadow-lg border border-gray-200'
+        }`}>
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${theme === 'dark' ? 'bg-[#38BDF8]/5' : 'bg-blue-200/30'}`}></div>
+          <h3 className={`font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10 ${
+            theme === 'dark' ? 'text-[#E5E7EB]' : 'text-gray-800'
+          }`}>
             <Activity className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> 
             <span className="hidden sm:inline">TDS Trends (Last Hour)</span>
             <span className="sm:hidden">TDS Trends</span>
