@@ -158,19 +158,24 @@ const Dashboard = () => {
           </h3>
           <div className="w-full flex-1 relative z-10" style={{ minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
+                <LineChart data={chartData}>
                   <defs>
-                    <linearGradient id="colorTds" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#38BDF8" stopOpacity={0.8}/>
-                      <stop offset="50%" stopColor="#0EA5E9" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0.1}/>
-                    </linearGradient>
+                    {/* Neon glow gradient for TDS line */}
                     <linearGradient id="colorTdsStroke" x1="0" y1="0" x2="1" y2="0">
                       <stop offset="0%" stopColor="#38BDF8"/>
-                      <stop offset="100%" stopColor="#0EA5E9"/>
+                      <stop offset="50%" stopColor="#0EA5E9"/>
+                      <stop offset="100%" stopColor="#06B6D4"/>
                     </linearGradient>
+                    {/* Glow filter for 3D neon effect */}
+                    <filter id="glowTds" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.3} />
                   <XAxis 
                     dataKey="time" 
                     stroke="#9CA3AF" 
@@ -195,7 +200,7 @@ const Dashboard = () => {
                       border: '2px solid #38BDF8', 
                       borderRadius: '16px', 
                       color: '#E5E7EB', 
-                      boxShadow: '0 20px 60px rgba(56, 189, 248, 0.3), 0 0 0 1px rgba(56, 189, 248, 0.2) inset', 
+                      boxShadow: '0 20px 60px rgba(56, 189, 248, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.3) inset', 
                       fontSize: '14px', 
                       fontWeight: 700, 
                       padding: '16px 20px',
@@ -210,16 +215,26 @@ const Dashboard = () => {
                     ]}
                     cursor={{ stroke: '#38BDF8', strokeWidth: 2, strokeDasharray: '5 5' }}
                   />
-                  <Area 
+                  {/* Neon TDS Line with glow effect */}
+                  <Line 
                     type="monotone" 
                     dataKey="tds" 
                     stroke="url(#colorTdsStroke)" 
-                    strokeWidth={3} 
-                    fillOpacity={1} 
-                    fill="url(#colorTds)"
+                    strokeWidth={5} 
+                    dot={{ r: 0 }} 
+                    activeDot={{ 
+                      r: 8, 
+                      fill: '#38BDF8', 
+                      stroke: '#fff', 
+                      strokeWidth: 2,
+                      filter: 'drop-shadow(0 0 8px #38BDF8)'
+                    }}
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
+                    filter="url(#glowTds)"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                   {/* Threshold Limit Line - Highly Visible */}
                   <Line 
@@ -227,13 +242,14 @@ const Dashboard = () => {
                     dataKey="tdsThreshold"
                     stroke="#FF0000" 
                     strokeDasharray="10 5" 
-                    strokeWidth={4} 
+                    strokeWidth={3} 
                     dot={false} 
                     isAnimationActive={false}
-                    strokeOpacity={0.9}
+                    strokeOpacity={0.85}
                     name={`Limit: ${settings.tdsThreshold} PPM`}
+                    filter="drop-shadow(0 0 6px #FF0000)"
                   />
-                </AreaChart>
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
@@ -251,19 +267,24 @@ const Dashboard = () => {
           </h3>
           <div className="w-full flex-1 relative z-10" style={{ minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
+                <LineChart data={chartData}>
                   <defs>
-                    <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#A855F7" stopOpacity={0.8}/>
-                      <stop offset="50%" stopColor="#9333EA" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#9333EA" stopOpacity={0.1}/>
-                    </linearGradient>
+                    {/* Neon glow gradient for Temperature line */}
                     <linearGradient id="colorTempStroke" x1="0" y1="0" x2="1" y2="0">
                       <stop offset="0%" stopColor="#A855F7"/>
-                      <stop offset="100%" stopColor="#9333EA"/>
+                      <stop offset="50%" stopColor="#9333EA"/>
+                      <stop offset="100%" stopColor="#7C3AED"/>
                     </linearGradient>
+                    {/* Glow filter for 3D neon effect */}
+                    <filter id="glowTemp" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.3} />
                   <XAxis 
                     dataKey="time" 
                     stroke="#9CA3AF" 
@@ -288,7 +309,7 @@ const Dashboard = () => {
                       border: '2px solid #A855F7', 
                       borderRadius: '16px', 
                       color: '#E5E7EB', 
-                      boxShadow: '0 20px 60px rgba(168, 85, 247, 0.3), 0 0 0 1px rgba(168, 85, 247, 0.2) inset', 
+                      boxShadow: '0 20px 60px rgba(168, 85, 247, 0.5), 0 0 0 1px rgba(168, 85, 247, 0.3) inset', 
                       fontSize: '14px', 
                       fontWeight: 700, 
                       padding: '16px 20px',
@@ -303,27 +324,40 @@ const Dashboard = () => {
                     ]}
                     cursor={{ stroke: '#A855F7', strokeWidth: 2, strokeDasharray: '5 5' }}
                   />
-                  <Area 
+                  {/* Neon Temperature Line with glow effect */}
+                  <Line 
                     type="monotone" 
                     dataKey="temp" 
                     stroke="url(#colorTempStroke)" 
-                    strokeWidth={3} 
-                    fillOpacity={1} 
-                    fill="url(#colorTemp)"
+                    strokeWidth={5} 
+                    dot={{ r: 0 }} 
+                    activeDot={{ 
+                      r: 8, 
+                      fill: '#A855F7', 
+                      stroke: '#fff', 
+                      strokeWidth: 2,
+                      filter: 'drop-shadow(0 0 8px #A855F7)'
+                    }}
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
+                    filter="url(#glowTemp)"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
+                  {/* Threshold Line with glow */}
                   <Line 
                     dataKey="tempThreshold"
                     stroke="#FF0000"
-                    strokeWidth={4}
+                    strokeWidth={3}
                     strokeDasharray="10 5"
                     dot={false}
                     name="Temperature Threshold"
                     type="monotone"
+                    strokeOpacity={0.85}
+                    filter="drop-shadow(0 0 6px #FF0000)"
                   />
-                </AreaChart>
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
