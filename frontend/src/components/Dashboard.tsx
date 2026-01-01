@@ -66,6 +66,7 @@ const Dashboard = () => {
   // This removes false readings, sensor errors, and zero values from visualization
   const chartData = data?.history
     .filter((item: any) => item.tds > 20) // Professional filtering: exclude unreliable low readings
+    .slice(-40) // Limit to last 40 data points for better performance and readability
     .map((item: any) => ({
       time: format(new Date(item.created_at), 'HH:mm'),
       tds: item.tds,
@@ -168,7 +169,7 @@ const Dashboard = () => {
                     </linearGradient>
                     {/* Glow filter for 3D neon effect */}
                     <filter id="glowTds" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                       <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -220,14 +221,14 @@ const Dashboard = () => {
                     type="monotone" 
                     dataKey="tds" 
                     stroke="url(#colorTdsStroke)" 
-                    strokeWidth={4} 
-                    dot={{ r: 4, fill: '#0EA5E9', stroke: '#06B6D4', strokeWidth: 2 }} 
+                    strokeWidth={2.5} 
+                    dot={{ r: 3, fill: '#0EA5E9', stroke: '#06B6D4', strokeWidth: 1.5 }} 
                     activeDot={{ 
-                      r: 8, 
+                      r: 6, 
                       fill: '#38BDF8', 
                       stroke: '#fff', 
                       strokeWidth: 2,
-                      filter: 'drop-shadow(0 0 8px #38BDF8)'
+                      filter: 'drop-shadow(0 0 6px #38BDF8)'
                     }}
                     animationDuration={300}
                     animationEasing="ease-out"
@@ -277,7 +278,7 @@ const Dashboard = () => {
                     </linearGradient>
                     {/* Glow filter for 3D neon effect */}
                     <filter id="glowTemp" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                       <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -329,14 +330,14 @@ const Dashboard = () => {
                     type="monotone" 
                     dataKey="temp" 
                     stroke="url(#colorTempStroke)" 
-                    strokeWidth={4} 
-                    dot={{ r: 4, fill: '#9333EA', stroke: '#7C3AED', strokeWidth: 2 }} 
+                    strokeWidth={2.5} 
+                    dot={{ r: 3, fill: '#9333EA', stroke: '#7C3AED', strokeWidth: 1.5 }} 
                     activeDot={{ 
-                      r: 8, 
+                      r: 6, 
                       fill: '#A855F7', 
                       stroke: '#fff', 
                       strokeWidth: 2,
-                      filter: 'drop-shadow(0 0 8px #A855F7)'
+                      filter: 'drop-shadow(0 0 6px #A855F7)'
                     }}
                     animationDuration={300}
                     animationEasing="ease-out"
