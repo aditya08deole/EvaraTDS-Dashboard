@@ -219,9 +219,9 @@ const Dashboard = () => {
                   <Line 
                     type="monotone" 
                     dataKey="tds" 
-                    stroke="url(#colorTdsStroke)" 
-                    strokeWidth={2.5} 
-                    dot={{ r: 3, fill: '#0EA5E9', stroke: '#06B6D4', strokeWidth: 1.5 }} 
+                    stroke="#38BDF8" 
+                    strokeWidth={3} 
+                    dot={{ r: 2.5, fill: '#0EA5E9', stroke: '#06B6D4', strokeWidth: 1.5 }} 
                     activeDot={{ 
                       r: 6, 
                       fill: '#38BDF8', 
@@ -232,9 +232,9 @@ const Dashboard = () => {
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
-                    filter="url(#glowTds)"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeOpacity={0.9}
                   />
                   {/* Threshold Limit Line - Highly Visible */}
                   <Line 
@@ -328,9 +328,9 @@ const Dashboard = () => {
                   <Line 
                     type="monotone" 
                     dataKey="temp" 
-                    stroke="url(#colorTempStroke)" 
-                    strokeWidth={2.5} 
-                    dot={{ r: 3, fill: '#9333EA', stroke: '#7C3AED', strokeWidth: 1.5 }} 
+                    stroke="#A855F7" 
+                    strokeWidth={3} 
+                    dot={{ r: 2.5, fill: '#9333EA', stroke: '#7C3AED', strokeWidth: 1.5 }} 
                     activeDot={{ 
                       r: 6, 
                       fill: '#A855F7', 
@@ -341,9 +341,9 @@ const Dashboard = () => {
                     animationDuration={300}
                     animationEasing="ease-out"
                     isAnimationActive={true}
-                    filter="url(#glowTemp)"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeOpacity={0.9}
                   />
                 </LineChart>
               </ResponsiveContainer>
