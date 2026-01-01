@@ -3,7 +3,6 @@ import { create } from 'zustand';
 
 interface SystemSettings {
   tdsThreshold: number;
-  tempThreshold: number;
   alertEmail: string;
   refreshInterval: number;
   lastModified: Date;
@@ -19,7 +18,6 @@ interface SettingsStore {
 
 const DEFAULT_SETTINGS: SystemSettings = {
   tdsThreshold: 150,
-  tempThreshold: 50,
   alertEmail: '',
   refreshInterval: 3000,
   lastModified: new Date(),

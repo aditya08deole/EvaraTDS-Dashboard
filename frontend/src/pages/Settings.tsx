@@ -7,7 +7,6 @@ const Settings: React.FC = () => {
   const { settings, saveSettings, resetToDefaults, loadSettings } = useSettingsStore();
   const { user } = useAuthStore();
   const [tdsThreshold, setTdsThreshold] = useState(settings.tdsThreshold);
-  const [tempThreshold, setTempThreshold] = useState(settings.tempThreshold);
   const [alertEmail, setAlertEmail] = useState(settings.alertEmail);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +23,6 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (!isEditing) {
       setTdsThreshold(settings.tdsThreshold);
-      setTempThreshold(settings.tempThreshold);
       setAlertEmail(settings.alertEmail);
     }
   }, [settings, isEditing]);
@@ -40,7 +38,6 @@ const Settings: React.FC = () => {
     try {
       await saveSettings({
         tdsThreshold,
-        tempThreshold,
         alertEmail
       }, user?.username || 'unknown');
       
@@ -130,30 +127,6 @@ const Settings: React.FC = () => {
           </div>
           <p className="text-sm lg:text-base text-[#6B7280]">
             Critical alerts will trigger when TDS exceeds this value. Current: <span className="text-[#38BDF8] font-bold">{tdsThreshold} PPM</span>
-          </p>
-        </div>
-
-        {/* Temperature Threshold */}
-        <div className="space-y-4">
-          <label className="text-lg lg:text-xl font-bold text-[#E5E7EB] flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-[#F59E0B]" />
-            Temperature Alert Threshold
-          </label>
-          <div className="flex gap-6 items-center">
-            <input 
-              type="number" 
-              value={tempThreshold}
-              onChange={(e) => {
-                setTempThreshold(Number(e.target.value));
-                setIsEditing(true);
-              }}
-              onBlur={() => setTimeout(() => setIsEditing(false), 500)}
-              className="bg-[#161E2E] border-2 border-[#1F2937] text-[#E5E7EB] rounded-lg px-6 py-4 w-full focus:ring-2 focus:ring-[#F59E0B] outline-none font-bold text-xl" 
-            />
-            <span className="flex items-center text-[#9CA3AF] text-lg font-bold whitespace-nowrap">°C</span>
-          </div>
-          <p className="text-sm lg:text-base text-[#6B7280]">
-            Warning alerts when temperature exceeds this value. Current: <span className="text-[#F59E0B] font-bold">{tempThreshold}°C</span>
           </p>
         </div>
 

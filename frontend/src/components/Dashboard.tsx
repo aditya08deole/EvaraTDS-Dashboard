@@ -71,12 +71,11 @@ const Dashboard = () => {
       time: format(new Date(item.created_at), 'HH:mm'),
       tds: item.tds,
       temp: item.temp,
-      tdsThreshold: settings.tdsThreshold, // Add threshold value to each data point
-      tempThreshold: settings.tempThreshold // Add temp threshold to each data point
+      tdsThreshold: settings.tdsThreshold // Add threshold value to each data point
     })) || [];
 
   return (
-    <div className="p-2 sm:p-4 lg:p-6 w-full min-h-screen flex flex-col space-y-2 sm:space-y-4 overflow-hidden bg-gradient-to-br from-[#0B0F1A]/50 via-transparent to-[#161E2E]/30">
+    <div className="p-3 sm:p-4 lg:p-6 w-full min-h-screen flex flex-col space-y-3 sm:space-y-4 overflow-x-hidden bg-gradient-to-br from-[#0B0F1A]/50 via-transparent to-[#161E2E]/30">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
@@ -142,12 +141,12 @@ const Dashboard = () => {
         /></div>
       </div>
 
-      {/* Charts Area - Responsive */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 h-64 sm:h-80 md:h-96 lg:h-96 xl:h-[420px] overflow-hidden relative">
+      {/* Charts Area - Responsive with better mobile sizing */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-4 overflow-visible relative">
         <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#38BDF8]/30 to-transparent"></div>
 
         {/* Left: TDS Chart */}
-        <div className="glass-card p-2 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden">
+        <div className="glass-card p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[380px] sm:min-h-[420px]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#38BDF8]/5 rounded-full blur-3xl"></div>
           <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
             <Activity className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> 
@@ -256,7 +255,7 @@ const Dashboard = () => {
           </div>
 
         {/* Right: Temperature Chart */}
-        <div className="glass-card p-2 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden">
+        <div className="glass-card p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[350px] sm:min-h-[400px]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#A855F7]/5 rounded-full blur-3xl"></div>
           <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
             <Thermometer className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#A855F7]"/> 
@@ -345,18 +344,6 @@ const Dashboard = () => {
                     filter="url(#glowTemp)"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                  />
-                  {/* Threshold Line with glow */}
-                  <Line 
-                    dataKey="tempThreshold"
-                    stroke="#FF0000"
-                    strokeWidth={3}
-                    strokeDasharray="10 5"
-                    dot={false}
-                    name="Temperature Threshold"
-                    type="monotone"
-                    strokeOpacity={0.85}
-                    filter="drop-shadow(0 0 6px #FF0000)"
                   />
                 </LineChart>
               </ResponsiveContainer>
