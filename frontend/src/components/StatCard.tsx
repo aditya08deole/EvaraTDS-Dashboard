@@ -1,5 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { useThemeStore } from '../store/useThemeStore';
 
 interface StatProps {
   label: string;
@@ -12,6 +13,7 @@ interface StatProps {
 }
 
 const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, isAlert, isSafe }) => {
+  const { theme } = useThemeStore();
   // Dynamic border and glow for Alert / Safe State
   const borderClass = isAlert
     ? 'border-[#EF4444] border-2 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.4)]'
@@ -34,18 +36,26 @@ const StatCard: React.FC<StatProps> = ({ label, value, unit, icon: Icon, color, 
       : 'drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]';
 
   return (
-    <div className={`glass-card p-3 sm:p-4 md:p-5 rounded-xl ${borderClass} flex flex-col justify-between hover:shadow-2xl transition-all duration-300 relative overflow-hidden group h-full`}>
+    <div className={`p-3 sm:p-4 md:p-5 rounded-xl ${borderClass} flex flex-col justify-between hover:shadow-2xl transition-all duration-300 relative overflow-hidden group h-full ${
+      theme === 'dark' ? 'glass-card' : 'bg-white shadow-lg'
+    }`}>
       {/* Premium gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#38BDF8]/0 to-[#38BDF8]/0 group-hover:from-[#38BDF8]/10 group-hover:to-transparent transition-all duration-500 pointer-events-none"></div>
       <div className="absolute inset-0 animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[#9CA3AF] text-xs sm:text-sm md:text-base uppercase tracking-wider font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{label}</span>
+          <span className={`text-xs sm:text-sm md:text-base uppercase tracking-wider font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] ${
+            theme === 'dark' ? 'text-[#9CA3AF]' : 'text-gray-600'
+          }`}>{label}</span>
           <Icon className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 ${colorClasses[color]} transition-transform duration-300 group-hover:scale-110`} />
         </div>
         <div className="flex items-end gap-1 sm:gap-2">
-          <span className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#E5E7EB] ${valueGlow} transition-all duration-300`}>{value}</span>
-          <span className="text-sm sm:text-base md:text-lg text-[#9CA3AF] mb-1 font-bold">{unit}</span>
+          <span className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black ${valueGlow} transition-all duration-300 ${
+            theme === 'dark' ? 'text-[#E5E7EB]' : 'text-gray-900'
+          }`}>{value}</span>
+          <span className={`text-sm sm:text-base md:text-lg mb-1 font-bold ${
+            theme === 'dark' ? 'text-[#9CA3AF]' : 'text-gray-600'
+          }`}>{unit}</span>
         </div>
       </div>
     </div>

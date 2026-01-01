@@ -125,14 +125,22 @@ const Dashboard = () => {
 
       {/* Alert Banner */}
       {isCritical ? (
-        <div className="neon-alert p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
+        <div className={`p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-xl w-full md:w-4/5 lg:w-3/5 min-h-[60px] ${
+          theme === 'dark' ? 'neon-alert' : 'bg-red-100 border-2 border-red-400'
+        }`}>
           <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 text-[#EF4444] flex-shrink-0" />
-          <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
+          <span className={`font-black text-base sm:text-lg md:text-xl leading-tight ${
+            theme === 'dark' ? 'text-[#E5E7EB]' : 'text-red-900'
+          }`}>CRITICAL ALERT: High TDS Detected ({latest.tds} PPM). Inspect filtration immediately.</span>
         </div>
       ) : isSafe ? (
-        <div className="glass-card p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border-2 border-[#22C55E] bg-gradient-to-r from-[#22C55E]/10 to-[#22C55E]/5 neon-glow-green w-full md:w-4/5 lg:w-3/5 min-h-[60px]">
+        <div className={`p-3 sm:p-4 md:p-5 rounded-xl flex items-center gap-2 sm:gap-3 shadow-lg border-2 border-[#22C55E] w-full md:w-4/5 lg:w-3/5 min-h-[60px] ${
+          theme === 'dark' ? 'glass-card bg-gradient-to-r from-[#22C55E]/10 to-[#22C55E]/5 neon-glow-green' : 'bg-green-100'
+        }`}>
           <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-[#22C55E] flex-shrink-0" />
-          <span className="font-black text-base sm:text-lg md:text-xl text-[#E5E7EB] leading-tight">SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
+          <span className={`font-black text-base sm:text-lg md:text-xl leading-tight ${
+            theme === 'dark' ? 'text-[#E5E7EB]' : 'text-green-900'
+          }`}>SAFE: TDS within acceptable range ({latest.tds} PPM).</span>
         </div>
       ) : null}
 
@@ -179,7 +187,9 @@ const Dashboard = () => {
             <Activity className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#38BDF8]"/> 
             <span className="hidden sm:inline">TDS Trends (Last Hour)</span>
             <span className="sm:hidden">TDS Trends</span>
-            <span className="ml-auto text-sm font-bold text-[#38BDF8] bg-[#38BDF8]/10 px-3 py-1 rounded-lg border border-[#38BDF8]/30">
+            <span className={`ml-auto text-sm font-bold text-[#38BDF8] px-3 py-1 rounded-lg border border-[#38BDF8]/30 ${
+              theme === 'dark' ? 'bg-[#38BDF8]/10' : 'bg-blue-100'
+            }`}>
               {latest.tds.toFixed(0)} PPM
             </span>
           </h3>
@@ -202,32 +212,32 @@ const Dashboard = () => {
                       </feMerge>
                     </filter>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} opacity={0.3} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#1F2937' : '#E5E7EB'} vertical={false} opacity={0.3} />
                   <XAxis 
                     dataKey="time" 
-                    stroke="#9CA3AF" 
+                    stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} 
                     fontSize={10} 
                     tickLine={false} 
-                    axisLine={{ stroke: '#1F2937', strokeWidth: 2 }} 
+                    axisLine={{ stroke: theme === 'dark' ? '#1F2937' : '#D1D5DB', strokeWidth: 2 }} 
                     fontWeight={600}
                     dy={5}
                   />
                   <YAxis 
-                    stroke="#9CA3AF" 
+                    stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} 
                     fontSize={10} 
                     tickLine={false} 
-                    axisLine={{ stroke: '#1F2937', strokeWidth: 2 }} 
+                    axisLine={{ stroke: theme === 'dark' ? '#1F2937' : '#D1D5DB', strokeWidth: 2 }} 
                     fontWeight={600}
                     dx={-5}
-                    label={{ value: 'PPM', angle: -90, position: 'insideLeft', style: { fill: '#9CA3AF', fontWeight: 700 } }}
+                    label={{ value: 'PPM', angle: -90, position: 'insideLeft', style: { fill: theme === 'dark' ? '#9CA3AF' : '#6B7280', fontWeight: 700 } }}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'rgba(11, 15, 26, 0.98)', 
-                      border: '2px solid #38BDF8', 
+                      backgroundColor: theme === 'dark' ? 'rgba(11, 15, 26, 0.98)' : 'rgba(255, 255, 255, 0.98)', 
+                      border: `2px solid #38BDF8`, 
                       borderRadius: '16px', 
-                      color: '#E5E7EB', 
-                      boxShadow: '0 20px 60px rgba(56, 189, 248, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.3) inset', 
+                      color: theme === 'dark' ? '#E5E7EB' : '#1F2937', 
+                      boxShadow: theme === 'dark' ? '0 20px 60px rgba(56, 189, 248, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.3) inset' : '0 10px 30px rgba(0, 0, 0, 0.15)', 
                       fontSize: '14px', 
                       fontWeight: 700, 
                       padding: '16px 20px',
@@ -282,13 +292,19 @@ const Dashboard = () => {
           </div>
 
         {/* Right: Temperature Chart */}
-        <div className="glass-card p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[350px] sm:min-h-[400px]">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#A855F7]/5 rounded-full blur-3xl"></div>
-          <h3 className="text-[#E5E7EB] font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10">
+        <div className={`p-3 sm:p-4 lg:p-5 rounded-xl flex flex-col relative overflow-hidden min-h-[350px] sm:min-h-[400px] transition-colors duration-300 ${
+          theme === 'dark' ? 'glass-card' : 'bg-white shadow-lg border border-gray-200'
+        }`}>
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${theme === 'dark' ? 'bg-[#A855F7]/5' : 'bg-purple-200/30'}`}></div>
+          <h3 className={`font-black text-lg sm:text-xl lg:text-2xl mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 relative z-10 ${
+            theme === 'dark' ? 'text-[#E5E7EB]' : 'text-gray-800'
+          }`}>
             <Thermometer className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#A855F7]"/> 
             <span className="hidden sm:inline">Temperature Trends (Last Hour)</span>
             <span className="sm:hidden">Temperature</span>
-            <span className="ml-auto text-sm font-bold text-[#A855F7] bg-[#A855F7]/10 px-3 py-1 rounded-lg border border-[#A855F7]/30">
+            <span className={`ml-auto text-sm font-bold text-[#A855F7] px-3 py-1 rounded-lg border border-[#A855F7]/30 ${
+              theme === 'dark' ? 'bg-[#A855F7]/10' : 'bg-purple-100'
+            }`}>
               {latest.temp.toFixed(1)} °C
             </span>
           </h3>
