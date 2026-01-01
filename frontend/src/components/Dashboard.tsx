@@ -220,8 +220,8 @@ const Dashboard = () => {
                     type="monotone" 
                     dataKey="tds" 
                     stroke="url(#colorTdsStroke)" 
-                    strokeWidth={5} 
-                    dot={{ r: 0 }} 
+                    strokeWidth={4} 
+                    dot={{ r: 4, fill: '#0EA5E9', stroke: '#06B6D4', strokeWidth: 2 }} 
                     activeDot={{ 
                       r: 8, 
                       fill: '#38BDF8', 
@@ -329,8 +329,8 @@ const Dashboard = () => {
                     type="monotone" 
                     dataKey="temp" 
                     stroke="url(#colorTempStroke)" 
-                    strokeWidth={5} 
-                    dot={{ r: 0 }} 
+                    strokeWidth={4} 
+                    dot={{ r: 4, fill: '#9333EA', stroke: '#7C3AED', strokeWidth: 2 }} 
                     activeDot={{ 
                       r: 8, 
                       fill: '#A855F7', 

@@ -19,7 +19,7 @@ interface SettingsStore {
 
 const DEFAULT_SETTINGS: SystemSettings = {
   tdsThreshold: 150,
-  tempThreshold: 35,
+  tempThreshold: 50,
   alertEmail: '',
   refreshInterval: 3000,
   lastModified: new Date(),
